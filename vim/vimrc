@@ -1,0 +1,227 @@
+"""" Vimrc of Conrad,
+" Note that I take credit for NONE of this, as most was borrowed from
+" elsewhere, and I may have missed/forgotten to add citations to each hack.
+
+" General stuff
+" Try and catch ssh sessions and avoid those stupid airline symbols (headache)
+let g:localSession = ($DISPLAY != "")
+" don't beep, use visual bell
+set visualbell
+set nocompatible
+set hidden
+set backspace=indent,eol,start
+map!  <BS>
+" I think this is needed
+set t_Co=256
+
+" Help keep clean code
+set cc=80
+
+" Leave at end
+filetype indent on
+filetype plugin on
+filetype plugin indent on
+
+syntax enable
+syntax on
+
+" Infect!!!
+execute pathogen#infect()
+
+" Handy hack, to retroactively apply sudo to write privileged file
+" source (likely not original): https://stackoverflow.com/a/7078429
+cmap w!! w !sudo tee > /dev/null %
+
+" Not compiled with +python so why not have :py point to :py3
+" FIXME: While useful, this also changes files .py extension to .py3 
+"cnoreabbrev py py3
+
+" Command history
+autocmd CmdwinEnter * nnoremap <buffer> <F5> <CR>q:
+
+" This is soo necessary with my touch-bar mac
+inoremap kj <Esc>
+
+set background=light
+" Using terminal solarized scheme, much easier
+"let g:solarized_termcolors=256
+"colorscheme solarized
+
+" Essential shift width, and soft tabs
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+au FileType * set fo-=cro
+
+" Spelling and some fixes as original misspelled word coloring was completely
+" illegible with my terminal/vim color scheme
+set spell spelllang=en_us
+" NOTE: This was recently turned back to normal.
+"hi SpellBad term=bold cterm=bold ctermfg=124 guifg=Red
+set spell
+set modeline
+
+set grepprg=grep\ -nH\ $*
+let g:tex_flavor='latex'
+
+" Pretty neat function to tell you the syntax rule for highlighting the word
+" under your cursor
+"nnoremap <f10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+"\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+"\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+" Mighty leader key!
+let mapleader="\<Space>"
+
+" TODO: Get it to print current filename
+"nnoremap <leader>o <esc>:vnew \| r ! git show master:expand("%:t")
+nnoremap <leader>o <esc>:vnew \| r ! git show master:
+
+" Buffer moving
+nnoremap <Leader>q <ESC>:wqa<CR>
+nnoremap <Leader>a <ESC>:bprev<CR>
+nnoremap <Leader>d <ESC>:bnext<CR>
+nnoremap <Leader>1 <ESC>:b1<CR>
+nnoremap <Leader>2 <ESC>:b2<CR>
+nnoremap <Leader>3 <ESC>:b3<CR>
+nnoremap <Leader>4 <ESC>:b4<CR>
+nnoremap <Leader>5 <ESC>:b5<CR>
+nnoremap <Leader>6 <ESC>:b6<CR>
+nnoremap <Leader>7 <ESC>:b7<CR>
+nnoremap <Leader>8 <ESC>:b8<CR>
+nnoremap <Leader>9 <ESC>:b9<CR>
+
+function! MakeSessionInput()
+    let l:sess_name = input('Session name: ')
+    :NERDTreeClose
+    execute "mksession"  l:sess_name .'.vim'
+    :qa
+endfunction
+nnoremap <leader>s <esc>:call MakeSessionInput()<cr>
+
+
+nnoremap <leader>n <esc>:NERDTreeFocus<cr>
+" This is super useful. If NERDTree is the last pane open, then quit
+" Taken from https://github.com/scrooloose/nerdtree/issues/635
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let NERDTreeIgnore = ['\.pyc$']
+
+" Window resizing
+"""" see resize.vim, this is for resizing vim windows quickly
+let g:vim_resize_disable_auto_mappings = 1
+nnoremap <Leader>h <esc>:CmdResizeLeft<cr>
+nnoremap <Leader>j <esc>:CmdResizeDown<cr>
+nnoremap <Leader>k <esc>:CmdResizeUp<cr>
+nnoremap <Leader>l <esc>:CmdResizeRight<cr>
+
+" Moving around windows painlessly
+map <c-h> <esc><c-w>h
+map <c-j> <esc><c-w>j
+map <c-k> <esc><c-w>k
+map <c-l> <esc><c-w>l
+
+" Leader paste mode
+nnoremap <leader>p :set invpaste<CR> 
+
+" Case insensitive search
+nnoremap <leader>/ /\c 
+nnoremap <leader>? ?\c 
+
+" Order of tab completion, this is similar to bash
+set wildmode=longest,list,full
+set wildmenu
+" Ignore certain filetypes for tab completion
+set wildignore+=*.pdf,*.o,*.obj,*.jpg,*.png,*.class
+
+" Must have relative absolute/relative line numbers
+set number
+set relativenumber
+
+let g:SuperTabClosePreviewOnPopupClose = 1
+
+" TODO: Figure this shit out
+let g:airline_theme ='solarized'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#buffer_nr_show = 1
+let g:airline#extensions#tabline#show_tabs = 0
+let g:airline#extensions#tabline#formatter = 'unique_tail'
+
+
+if g:localSession
+
+    let g:airline_symbols = {}
+    let g:airline_powerline_fonts = 1
+    let g:airline_left_sep = '»'
+    let g:airline_left_sep = '▶'
+    let g:airline_right_sep = '«'
+    let g:airline_right_sep = '◀'
+    let g:airline_symbols.linenr = '¶'
+    let g:airline_symbols.maxlinenr = ''
+    let g:airline_symbols.paste = 'ρ'
+    let g:airline_symbols.paste = 'Þ'
+    let g:airline_symbols.spell = 'Ꞩ'
+    let g:airline_symbols.notexists = '∄'
+    let g:airline_symbols.whitespace = 'Ξ'
+
+    "" powerline symbols
+    let g:airline_left_sep = ''
+    let g:airline_left_alt_sep = '|'
+    let g:airline_right_alt_sep = ''
+    let g:airline_right_sep = ''
+    let g:airline_symbols.branch = ''
+    let g:airline_symbols.readonly = ''
+endif
+
+" Go stuff
+let g:go_highlight_array_whitespace_error = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_chan_whitespace_error = 1
+let g:go_highlight_space_tab_error = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_string_spellcheck = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_format_strings = 1
+let g:go_highlight_trailing_whitespace_error = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_types = 1
+let g:go_highlight_generate_tags = 1
+
+"let g:go_fmt_command = 0
+"let g:go_fmt_autosave = 0
+autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
+
+" fg and bg were the same in quickfix
+"hi Search ctermbg=7
+" Python colors all fucked up, here is fix, hack
+"hi pythonStatement ctermfg=2
+"hi pythonFunction ctermfg=4
+"hi pythonComment ctermfg=LightGreen
+"hi pythonExceptions ctermfg=9
+"hi pythonException ctermfg=DarkMagenta
+"hi Normal ctermfg=LightBlue
+
+autocmd FileType go nmap <leader>b  <Plug>(go-build)
+autocmd FileType go nmap <leader>r  <Plug>(go-run)
+autocmd FileType go nmap <leader>eo :GoMetaLinter<cr>
+autocmd FileType go nmap <leader>ec :cclose<cr>
+autocmd FileType go nmap <leader>en :cnext<cr>
+autocmd FileType go nmap <leader>ep :cprevious<cr>
+
+" TODO: Test and customize
+" Taken from http://vim.wikia.com/wiki/Swap_file_%22...%22already_exists!_-_so_diff_it
+command! DiffAgainstFileOnDisk call DiffAgainstFileOnDisk()
+function! DiffAgainstFileOnDisk()
+  :w! /tmp/working_copy
+  exec "!diff /tmp/working_copy %"
+endfunction
+
+" Taken from http://vim.1045645.n5.nabble.com/Re-how-to-suppress-quot-E173-1-more-file-to-edit-quot-td5716336.html
+" Avoid E173, caused when opening multiple files from the command line, but one
+" or more remained un-edited.
+if argc() > 1
+  silent blast " load last buffer
+  silent bfirst " switch back to the first
+endif

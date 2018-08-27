@@ -1,0 +1,11 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =9
+let g:netrw_dirhist_1='/Users/conradchristensen/school/grad/research/play/tofu/mxnet/make'
+let g:netrw_dirhist_2='/Users/conradchristensen/school/grad/research/tofu/rl/rltofu'
+let g:netrw_dirhist_3='scp://nyu-18/'
+let g:netrw_dirhist_4='scp://nyu-18/tofu/'
+let g:netrw_dirhist_5='scp://nyu-18/tofu/rl/'
+let g:netrw_dirhist_6='scp://nyu-18/tofu/rl/gym-rltofu/'
+let g:netrw_dirhist_7='scp://nyu-18/tofu/rl/gym-rltofu/gym_rltofu/'
+let g:netrw_dirhist_8='scp://nyu-18/tofu/rl/gym-rltofu/gym_rltofu/envs/'
+let g:netrw_dirhist_9='scp://nyu-18/tofu/rl/gym-rltofu/gym_rltofu/envs/scripts/'
