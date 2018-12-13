@@ -219,7 +219,35 @@ lorem() {
 
 tclock() {
     while true; do 
-        tput clear; date +"%H : %M : %S %b %d" | figlet
+        tput clear; date +"%H : %M : %S %b %d" | figlet -w 120
         sleep 1
     done
+}
+
+_preset() {
+    sleep 10
+    echo "Clip board reset" | xclip -i -selection clipboard 
+}
+
+pclip() {
+    read p
+    echo $p | xclip -i -selection clipboard
+    (_preset &)
+}
+
+alias aws="gpg -d ~/.ssh/aws.gpg | pclip"
+alias q="QHOME=~/q rlwrap -r ~/q/l64/q"
+export PATH=$PATH:$HOME/q/l64
+a2q() {
+    java -jar /home/con/workspace/grad/classes/advanced_databases_parent/advanced_databases/homework/hw2/aquery/aquery/target/scala-2.11/aquery.jar $*
+}
+what () {
+    type $1
+    declare -f $1 || alias $1
+}
+alias vmore="vim -u ~/.vim/vimrc.pager"
+alias -g V=" | vim -u ~/.vim/vimrc.pager --not-a-term -"
+
+vman () {
+    /usr/bin/man $* V -c 'set ft=man'
 }

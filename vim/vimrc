@@ -25,6 +25,16 @@ filetype plugin indent on
 syntax enable
 syntax on
 
+" Tpp filetype as CPP file
+augroup tpp_ft
+    "au!
+    autocmd BufNewFile,BufRead *.tpp set filetype=cpp
+augroup END
+
+augroup aqu
+    autocmd BufNewFile,BufRead *.a set filetype=sql
+augroup END
+
 " Infect!!!
 execute pathogen#infect()
 
@@ -73,6 +83,11 @@ let g:tex_flavor='latex'
 " Mighty leader key!
 let mapleader="\<Space>"
 
+" Delete surrounding parenthesis
+nnoremap <leader>( F(ma%x`ax
+xnoremap <leader>" xi""<esc>P
+xnoremap <leader>' xi''<esc>P
+
 " TODO: Get it to print current filename
 "nnoremap <leader>o <esc>:vnew \| r ! git show master:expand("%:t")
 nnoremap <leader>o <esc>:vnew \| r ! git show master:
@@ -91,6 +106,8 @@ nnoremap <Leader>7 <ESC>:b7<CR>
 nnoremap <Leader>8 <ESC>:b8<CR>
 nnoremap <Leader>9 <ESC>:b9<CR>
 
+nnoremap <leader>v <esc>:read ! xclip -selection clipboard -o<cr>
+
 function! MakeSessionInput()
     let l:sess_name = input('Session name: ')
     :NERDTreeClose
@@ -98,6 +115,10 @@ function! MakeSessionInput()
     :qa
 endfunction
 nnoremap <leader>s <esc>:call MakeSessionInput()<cr>
+
+" Trailing whitespace. This could be bound to a less accessible keybinding as
+" it does not get run too often...
+nnoremap <leader>t <esc>:%s/ \+$//<cr>
 
 
 nnoremap <leader>n <esc>:NERDTreeFocus<cr>
@@ -136,6 +157,10 @@ set wildignore+=*.pdf,*.o,*.obj,*.jpg,*.png,*.class
 " Must have relative absolute/relative line numbers
 set number
 set relativenumber
+
+" Latex stuff
+autocmd FileType tex map <f5> <esc>bdwi\begin{<esc>pa}<esc>o\end{<esc>pa}<esc>O
+autocmd FileType tex imap <f5> <esc>bdwi\begin{<esc>pa}<esc>o\end{<esc>pa}<esc>O
 
 let g:SuperTabClosePreviewOnPopupClose = 1
 
