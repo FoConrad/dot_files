@@ -68,6 +68,7 @@ alias -g B='&>/dev/null &'
 alias -g DY="DISPLAY=':0.0'"
 alias -g DN="DISPLAY=''"
 alias -g CN="CUDA_VISIBLE_DEVICES=''"
+alias -g J='-j$(nproc)'
 
 alias -g ...='../..'
 alias -g ....='../../..'

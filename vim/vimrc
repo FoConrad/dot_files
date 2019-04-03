@@ -125,7 +125,7 @@ nnoremap <leader>n <esc>:NERDTreeFocus<cr>
 " This is super useful. If NERDTree is the last pane open, then quit
 " Taken from https://github.com/scrooloose/nerdtree/issues/635
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-let NERDTreeIgnore = ['\.pyc$']
+let NERDTreeIgnore = ['\.pyc$', '\.o$', '\.d$']
 
 " Window resizing
 """" see resize.vim, this is for resizing vim windows quickly
@@ -250,3 +250,7 @@ if argc() > 1
   silent blast " load last buffer
   silent bfirst " switch back to the first
 endif
+
+" Temp settings for DBx1000 code
+autocmd BufRead,BufNewFile /home/con/workspace/grad/research/rlcc/DBx1000-Mix/*.cpp setlocal ts=4 noexpandtab
+autocmd BufRead,BufNewFile /home/con/workspace/grad/research/rlcc/DBx1000-Mix/*.h setlocal ts=4 noexpandtab
