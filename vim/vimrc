@@ -76,9 +76,9 @@ let g:tex_flavor='latex'
 
 " Pretty neat function to tell you the syntax rule for highlighting the word
 " under your cursor
-"nnoremap <f10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-"\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-"\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+nnoremap <f10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+            \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+            \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 " Mighty leader key!
 let mapleader="\<Space>"
@@ -91,6 +91,29 @@ xnoremap <leader>' xi''<esc>P
 " TODO: Get it to print current filename
 "nnoremap <leader>o <esc>:vnew \| r ! git show master:expand("%:t")
 nnoremap <leader>o <esc>:vnew \| r ! git show master:
+
+
+" Commands. functions, and bindings (oh my!) to compare current file with that
+" on another git branch.
+command! -nargs=* ReadBranchFile call ReadBranchFile(<f-args>)
+function! ReadBranchFile(branch, file, type)
+    let l:gc = 'git show ' . a:branch . ':' . a:file
+    enew|pu=system(l:gc)
+    execute 'set filetype=' . a:type
+endfunction
+nnoremap <leader>g <esc>:ReadBranchFile 
+" -> Guided prompt
+"nnoremap <leader>G <esc>:call ReadBranchFile(\
+"       input('branch: '), input('file: '), input('type: '))<cr>
+
+command! -nargs=* AutoReadBranchFile call AutoReadBranchFile(<q-args>)
+function! AutoReadBranchFile(branch)
+    execute 'vsplit'
+    execute 'wincmd p'
+    call ReadBranchFile(a:branch, expand('%'), &ft)
+endfunction
+nnoremap <leader>G <esc>:AutoReadBranchFile 
+
 
 " Buffer moving
 nnoremap <Leader>q <ESC>:wqa<CR>
