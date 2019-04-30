@@ -144,6 +144,9 @@ nnoremap <leader>s <esc>:call MakeSessionInput()<cr>
 nnoremap <leader>t <esc>:%s/ \+$//<cr>
 
 
+nnoremap <leader>y <esc>:call CurtineIncSw()<cr>
+
+
 nnoremap <leader>n <esc>:NERDTreeFocus<cr>
 " This is super useful. If NERDTree is the last pane open, then quit
 " Taken from https://github.com/scrooloose/nerdtree/issues/635

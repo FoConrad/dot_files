@@ -89,7 +89,7 @@ pp(){
   fi
 }
 mkcd(){
-    /bin/mkdir $1 && cd $1
+    /bin/mkdir -p $1 && cd $1
 }
 
 dt(){
@@ -225,18 +225,37 @@ tclock() {
     done
 }
 
-_preset() {
-    sleep 10
-    echo "Clip board reset" | xclip -i -selection clipboard 
+# _preset() {
+    #sleep 10
+    #echo "Clip board reset" | xclip -i -selection clipboard 
+#}
+
+# pclip() {
+    #local p
+    #read p
+    #echo $p | xclip -i -selection clipboard
+    #(_preset &)
+#}
+
+#alias aws="gpg -d ~/.ssh/aws.gpg | pclip"
+
+aws() {
+    local pass_="$(gpg -d ~/.ssh/aws.gpg)"
+    if [ $? -eq 0 ]; then
+        echo "$pass_" | xclip -i -selection clipboard
+        pass_="empty"
+        (
+            (
+                sleep 10
+                echo "Clip board reset" | xclip -i -selection clipboard
+            )&
+        )
+    else
+        pass_="empty"
+        echo "Bad password"
+    fi
 }
 
-pclip() {
-    read p
-    echo $p | xclip -i -selection clipboard
-    (_preset &)
-}
-
-alias aws="gpg -d ~/.ssh/aws.gpg | pclip"
 alias q="QHOME=~/q rlwrap -r ~/q/l64/q"
 export PATH=$PATH:$HOME/q/l64
 a2q() {
