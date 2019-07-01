@@ -19,7 +19,8 @@ URxvt.depth:                32
 URxvt.geometry:             90x30
 ! Control opacity with the following line. First three sections take from
 ! S_base3 below, and final section is opacity
-URxvt*background:           rgba:fd00/f600/e300/a600
+URxvt*background:           rgba:fd00/f600/e300/ae00
+!URxvt*background:           rgba:fd00/f600/e300/a600
 !URxvt.shading:              100
 !URxvt.fading:               200
 URxvt.loginShell:           true

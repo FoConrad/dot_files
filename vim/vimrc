@@ -191,7 +191,6 @@ autocmd FileType tex imap <f5> <esc>bdwi\begin{<esc>pa}<esc>o\end{<esc>pa}<esc>O
 let g:SuperTabClosePreviewOnPopupClose = 1
 
 " TODO: Figure this shit out
-let g:airline_theme ='solarized'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#tabline#show_tabs = 0
@@ -200,6 +199,7 @@ let g:airline#extensions#tabline#formatter = 'unique_tail'
 
 if g:localSession
 
+let g:airline_theme ='solarized'
     let g:airline_symbols = {}
     let g:airline_powerline_fonts = 1
     let g:airline_left_sep = '»'
