@@ -248,11 +248,6 @@ pdf_term() {
 }
 
 qtabs() {
-    #if [ $# -gt 0 ]; then
-        #qpdfview $@ 2>/dev/null > /dev/null &
-    #else
-        #find . -name '*pdf' -exec qpdfview {} + 2>/dev/null > /dev/null &
-    #fi
     ([ $# -gt 0 ] && echo "$@" || echo "$(find . -maxdepth 1 -name '*.pdf')") \
         | xargs qpdfview B
 }
@@ -337,3 +332,6 @@ alias -g CO='$(xclip -o -selection clipboard)'
 alias -g CI="|xclip -i -selection clipboard"
 alias -g SO='$(xclip -o -selection primary)' # Mouse middle button
 alias -g SI="|xclip -i -selection primary"
+
+# Add some other files
+source "${HOME}/config/pawk.sh"
