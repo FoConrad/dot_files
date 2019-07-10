@@ -1,3 +1,7 @@
+################# TODO #####################
+# Allow inclusion of new line literals in the command strings....
+# (hint, remove the -e flag from echo and add newlines separately)
+############################################
 _pyp() {
   # This function is indirectly called from pyp, pyp3 with python version
   # supplied
