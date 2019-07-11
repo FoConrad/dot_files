@@ -335,3 +335,12 @@ alias -g SI="|xclip -i -selection primary"
 
 # Add some other files
 source "${HOME}/config/pawk.sh"
+
+# Rot 13 in pawk. Pawk is best for iterating over input, but here we skip the
+# line iteration and directly map the input file 'rfil'. Honestly, the quoting
+# problem here is because of the alias, but could use a better solution
+alias -g rot13="pyp3 raw 'print(\"\".join(map( \
+    lambda c: c if not c.isalpha() else ( \
+            lambda base: chr( base + ((ord(c)-base+13)%26) ) \
+        )(ord(\"A\" if c.isupper() else \"a\")), \
+    rfil.read())), end=\"\")'"
