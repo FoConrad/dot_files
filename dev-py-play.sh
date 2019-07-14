@@ -7,10 +7,10 @@ if tmux has-session -t "${SESS_NAME}"; then
     exit 0
 fi
 
-rm -rf "/home/con/tmp/${SESS_NAME}"
-mkdir -p "/home/con/tmp/${SESS_NAME}"
+rm -rf "${HOME}/tmp/${SESS_NAME}"
+mkdir -p "${HOME}/tmp/${SESS_NAME}"
 
-tmux new-session -s "${SESS_NAME}" -c "/home/con/tmp/${SESS_NAME}" \; \
+tmux new-session -s "${SESS_NAME}" -c "${HOME}/tmp/${SESS_NAME}" \; \
     split-window -v -p 30 \; \
     select-pane -U \; \
     send-keys 'touch play.py ; vim play.py' Enter \; \

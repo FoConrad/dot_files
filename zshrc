@@ -16,7 +16,7 @@ export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda-9.1/li
 export LIBRARY_PATH=$LD_LIBRARY_PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/con/.oh-my-zsh
+export ZSH="${HOME}/.oh-my-zsh"
 export XDG_CONFIG_HOME="$HOME/.config"
 PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
 export PKG_CONFIG_PATH
@@ -38,7 +38,7 @@ COMPLETION_WAITING_DOTS="true"
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-plugins=(git autojump vi-mode)
+plugins=(git tmux autojump vi-mode)
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode  # @todo - THIS DOES NOT WORK?
 
@@ -63,9 +63,8 @@ setopt HIST_IGNORE_SPACE
 
 
 alias -g L="|less"
-alias -g V="|vim -u /home/con/config/vim.less -"
-#alias vmore="vim -u ~/.vim/vimrc.pager"
-#alias -g V=" | vim -u ~/.vim/vimrc.pager --not-a-term -"
+alias -g V="|vim -u ${HOME}/config/vim.less -"
+alias vmore="vim -u ${HOME}/config/vim.less"
 # See no evil...
 alias -g B='&>/dev/null &'
 # Trick the following command about the status of the display
@@ -84,6 +83,15 @@ alias -s c=vim
 alias -s h=vim
 alias -s cpp=vim
 alias ll='ls -latr'
+
+duckgo() {
+	search=""
+	echo "Searching for: $@"
+	for term in "$@"; do
+		search="$search+$term"
+	done
+	firefox -new-window "https://www.duckduckgo.com/?t=lm&q=$search"
+}
 
 pp(){
   if [ $# -gt 0 ];then
@@ -175,7 +183,7 @@ cims_print() {
 alias fs='wmctrl -r ":ACTIVE:" -b toggle,fullscreen'
 
 alias cgo='source ~/builds/anaconda3/activate'
-alias ]='xdg-open'
+alias ]="xdg-open $@ 2>/dev/null || open $@"
 
 tensor_start() {
     ssh -N -f -L ${2}:127.0.0.1:6006 FoConrad@apt${1}.apt.emulab.net
@@ -221,9 +229,9 @@ func_grep() {
   if [[ $func_name =~ "^\(.*\)$" ]]; then
     alts=2
   fi
-  grep -zPo "${func_name}\([^{]+(\{([^{}]++|(?${alts}))*\})" $@ | tr '\0' '\n' \
-      | grep -zP --color=yes "${func_name}"
+  pcregrep -Mo "${func_name}\([^{]+(\{([^{}]++|(?${alts}))*\})" $@
 }
+
 
 pli() {
     grep $@ =(ps aux)
@@ -328,10 +336,49 @@ _gen_fzf_default_opts
 
 # Clipboard global aliases. Lol, make sure that the output commands are in
 # single quotes or they will be expanded right now!!!!!
-alias -g CO='$(xclip -o -selection clipboard)'
-alias -g CI="|xclip -i -selection clipboard"
-alias -g SO='$(xclip -o -selection primary)' # Mouse middle button
-alias -g SI="|xclip -i -selection primary"
+alias -g CO='$(pbpaste)'
+alias -g CI="|pbcopy"
+alias -g SO='$(pbpaste -pboard ruler)' # Mouse middle button
+alias -g SI="|pbcopy -pboard ruler"
 
 # Add some other files
 source "${HOME}/config/pawk.sh"
+
+# Mac stuff
+alias awk='/usr/bin/env gawk'
+alias nproc="sysctl -n hw.ncpu"
+alias cgo='source /Users/work/workspace/def_py3_env/default/bin/activate'
+
+alias desc='declare -f'
+
+dget() {
+    scp desk:${1} .
+}
+
+eval "$(thefuck --alias)"
+# You can use whatever you want as an alias, like for Mondays:
+eval "$(thefuck --alias shit)"
+
+######################### New functions and aliases ###########################
+untar() {
+    if [ $# -lt 1 ]; then
+        echo "Usage: untar [opts] file.tar[bz2|gz]"
+        exit 1
+    fi
+    local args="xvf"
+    
+    for last_arg; do :; done
+    [[ "$last" =~ "\.gz$" ]] && args="${args}z"
+    [[ "$last" =~ "\.bz2$" ]] && args="${args}j"
+    tar "${args}" "$@"
+}
+# Tmux ease
+# There is tmux mode!
+#alias ts='tmux new-s -s'
+
+############################ Custom plugins as well ###########################
+source /Users/work/config/builds/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Other tools
+#   yabai
+alias yab="brew services start koekeishiya/formulae/yabai"
