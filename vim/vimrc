@@ -16,6 +16,7 @@ set t_Co=256
 
 " Help keep clean code
 set cc=80
+hi ColorColumn ctermbg=24
 
 " Leave at end
 filetype indent on
@@ -53,7 +54,7 @@ autocmd CmdwinEnter * nnoremap <buffer> <F5> <CR>q:
 " This is soo necessary with my touch-bar mac
 inoremap kj <Esc>
 
-set background=light
+set background=dark
 " Using terminal solarized scheme, much easier
 "let g:solarized_termcolors=256
 "colorscheme solarized
@@ -75,13 +76,12 @@ au FileType * set fo=qlcroj
 " And the width at which to break comment lines 
 let &textwidth=&colorcolumn-1
 
-" Spelling and some fixes as original misspelled word coloring was completely
-" illegible with my terminal/vim color scheme
-set spell spelllang=en_us
-" NOTE: This was recently turned back to normal.
-"hi SpellBad term=bold cterm=bold ctermfg=124 guifg=Red
-set spell
+set nospell
 set modeline
+
+" NOTE: In case 'set spell' is used but the colors are illegible (may need to
+" change the specific colors)
+"hi SpellBad term=bold cterm=bold ctermfg=124 guifg=Red
 
 set grepprg=grep\ -nH\ $*
 let g:tex_flavor='latex'
@@ -228,10 +228,10 @@ let g:airline#extensions#tabline#formatter = 'unique_tail'
 let g:airline_section_c = '%t'
 
 
-let g:airline_theme ='solarized'
 
+" FIXME: Changed for iTerm
 if g:localSession
-let g:airline_theme ='solarized'
+    let g:airline_theme ='luna'
     let g:airline_symbols = {}
     let g:airline_powerline_fonts = 1
     let g:airline_left_sep = '»'
@@ -324,3 +324,5 @@ function! NerdEntrRebind()
     normal <cr>
 endfunction
 autocmd VimEnter * call NERDTreeAddKeyMap({ 'key': '<leader><cr>', 'scope': 'all', 'callback': 'NerdEntrRebind' })
+
+
