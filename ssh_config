@@ -8,37 +8,9 @@ HOST cims
   identityfile /home/con/.ssh/id_rsa
 
 # Wish these could be made more generic 
-HOST nyu-2
-  hostname beaker-2.news.cs.nyu.edu
-HOST nyu-3
-  hostname beaker-3.news.cs.nyu.edu
-HOST nyu-18
-  hostname beaker-18.news.cs.nyu.edu
-HOST nyu-19
-  hostname beaker-19.news.cs.nyu.edu
-HOST nyu-20
-  hostname beaker-20.news.cs.nyu.edu
-HOST nyu-21
-  hostname beaker-21.news.cs.nyu.edu
-HOST nyu-22
-  hostname beaker-22.news.cs.nyu.edu
-HOST nyu-23
-  hostname beaker-23.news.cs.nyu.edu
-HOST nyu-24
-  hostname beaker-24.news.cs.nyu.edu
-HOST nyu-25
-  hostname beaker-25.news.cs.nyu.edu
+HOST dcos21
+  hostname 10.128.9.83
 
-
-HOST nyu-g1
-  hostname geeker-1.news.cs.nyu.edu
-HOST nyu-g2
-  hostname geeker-2.news.cs.nyu.edu
-HOST nyu-g3
-  hostname geeker-3.news.cs.nyu.edu
-HOST nyu-g4
-  hostname geeker-4.news.cs.nyu.edu
-
-HOST nyu*
-  user con
-  identityfile /home/con/.ssh/id_rsa
+HOST dcos*
+  user root
+  identityfile /Users/conrad/.ssh/id_rsa 

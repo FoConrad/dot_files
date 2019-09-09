@@ -1,3 +1,10 @@
+# Rockerbox specific configurations and functions.
+source $HOME/config/rockerbox_profile # Env vars, and some docker funcs
+source $HOME/config/rbuid_funcs # Functions for emulating pixel fires
+
+# Hack
+export ZSH_DISABLE_COMPFIX=true
+
 # Path manipulation
 # Go path addition
 PATH=$PATH:/usr/local/go/bin
@@ -24,6 +31,11 @@ ZSH_THEME="conrad"
 export KEYTIMEOUT=10 # For going into insertion mode
 
 export CUPS_USER='conradbc'
+
+export DOCKER_USER="foconrad"
+export DOCKER_PASSWORD_FILE="${HOME}/config/docker_pass.gpg"
+# Set this up so it does not trigger right away and sit there w/ sensitive
+alias -g DP='DOCKER_PASSWORD=$(gpg -d $DOCKER_PASSWORD_FILE)'
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -58,6 +70,7 @@ alias awk='/usr/bin/env gawk'
 
 ###
 setopt HIST_IGNORE_SPACE
+setopt hist_ignore_dups
 #alias cd=' cd'
 #alias ls=' ls --color=auto'
 
@@ -73,6 +86,8 @@ alias -g DN="DISPLAY=''"
 alias -g CN="CUDA_VISIBLE_DEVICES=''"
 alias -g J='-j$(nproc)'
 
+# Lol, sometimes try and open file via :e write from command line
+alias ':e'='vim'
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
@@ -83,6 +98,9 @@ alias -s c=vim
 alias -s h=vim
 alias -s cpp=vim
 alias ll='ls -latr'
+
+# Zsh autocomplete pattern so that vim will ignore trying to open .pyc
+zstyle ':completion:*:*:vim:*' file-patterns '^*.(aux|log|pyc):source-files' '*:all-files'
 
 duckgo() {
 	search=""
@@ -105,7 +123,7 @@ mkcd(){
 }
 
 dt(){
-  date "+%m%d%y%H%M%S"
+  date "+%Y%m%d%H%M%S"
 }
 
 
@@ -182,7 +200,6 @@ cims_print() {
 }
 alias fs='wmctrl -r ":ACTIVE:" -b toggle,fullscreen'
 
-alias cgo='source ~/builds/anaconda3/activate'
 alias ]="xdg-open $@ 2>/dev/null || open $@"
 
 tensor_start() {
@@ -265,8 +282,7 @@ pdfind() {
 }
 
 lorem() {
-    # Hack from https://unix.stackexchange.com/questions/97160/is-there-something-like-a-lorem-ipsum-generator
-    [[ "$1" =~ "^[0-9]+$" ]] && head -n $1 <(tr -dc a-z1-4 </dev/urandom | tr 1-2 ' \n' | awk 'length==0 || length>50' | tr 3-4 ' ' | sed 's/^ *//' | cat -s | sed 's/ / /g' | fmt) || echo "Please enter integer argument"
+    /Users/conrad/dot_files/lorem.zsh "$@"
 }
 
 tclock() {
@@ -347,7 +363,7 @@ source "${HOME}/config/pawk.sh"
 # Mac stuff
 alias awk='/usr/bin/env gawk'
 alias nproc="sysctl -n hw.ncpu"
-alias cgo='source /Users/work/workspace/def_py3_env/default/bin/activate'
+alias cgo="source ${HOME}/work/def_py3_env/bin/activate"
 
 alias desc='declare -f'
 
@@ -377,7 +393,7 @@ untar() {
 #alias ts='tmux new-s -s'
 
 ############################ Custom plugins as well ###########################
-source /Users/work/config/builds/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ${HOME}/config/builds/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Other tools
 #   yabai
@@ -390,3 +406,28 @@ alias -g rot13="pyp3 raw 'print(\"\".join(map( \
             lambda base: chr( base + ((ord(c)-base+13)%26) ) \
         )(ord(\"A\" if c.isupper() else \"a\")), \
     rfil.read())), end=\"\")'"
+
+display() {
+    echo "osascript -e 'display notification \"$@\"'" | bash -x
+}
+
+rlink() {
+    local target_file="$1"
+
+    cd "$(dirname $target_file)"
+    target_file="$(basename $target_file)"
+
+    # Iterate down a (possible) chain of symlinks
+    while [ -L "$target_file" ]; do
+        target_file="$(readlink $target_file)"
+        cd "$(dirname $target_file)"
+        target_file="$(basename $target_file)"
+    done
+    echo "$(pwd -P)/${target_file}"
+}
+
+G() {
+    grep -rnI "$@" .
+}
+
+

@@ -4,7 +4,7 @@
 
 " General stuff
 " Try and catch ssh sessions and avoid those stupid airline symbols (headache)
-let g:localSession = ($DISPLAY != "")
+let g:localSession = 1
 " don't beep, use visual bell
 set visualbell
 set nocompatible
@@ -37,6 +37,7 @@ augroup END
 
 " Infect!!!
 execute pathogen#infect()
+execute pathogen#helptags()
 
 " Handy hack, to retroactively apply sudo to write privileged file
 " source (likely not original): https://stackoverflow.com/a/7078429
@@ -61,7 +62,18 @@ set background=light
 set shiftwidth=4
 set softtabstop=4
 set expandtab
-au FileType * set fo-=cro
+
+" LIST: 
+"   - Removing "cro" formatting options prevents  the automatic insertion
+"       of the comment lead when editing a new line under an existing
+"       comment.
+"   - Format option 'j' removes comment lead when joining lines with J (for
+"       other options please refer the pansophical help screens @ fo-table
+"au FileType * set fo-=cro
+au FileType * set fo=qlcroj
+
+" And the width at which to break comment lines 
+let &textwidth=&colorcolumn-1
 
 " Spelling and some fixes as original misspelled word coloring was completely
 " illegible with my terminal/vim color scheme
@@ -91,6 +103,19 @@ xnoremap <leader>' xi''<esc>P
 " TODO: Get it to print current filename
 "nnoremap <leader>o <esc>:vnew \| r ! git show master:expand("%:t")
 nnoremap <leader>o <esc>:vnew \| r ! git show master:
+
+" Turn on highlight and search
+hi Search ctermbg=LightBlue
+command! -nargs=* HighListSearch call HighListSearch(<q-args>)
+function! HighListSearch(pat)
+    if strlen(a:pat) == 0
+        set nohlsearch
+    else
+        let @/='\v' . a:pat
+        normal n
+    endif
+endfunction
+nnoremap <leader>H <esc>:set hlsearch<cr>:HighListSearch 
 
 
 " Commands. functions, and bindings (oh my!) to compare current file with that
@@ -170,6 +195,9 @@ map <c-l> <esc><c-w>l
 " Leader paste mode
 nnoremap <leader>p :set invpaste<CR> 
 
+" Insert single character, type: ,s<char>
+nmap <silent> ,s "=nr2char(getchar())<cr>P
+
 " Case insensitive search
 nnoremap <leader>/ /\c 
 nnoremap <leader>? ?\c 
@@ -196,18 +224,23 @@ let g:airline#extensions#tabline#buffer_nr_show = 1
 let g:airline#extensions#tabline#show_tabs = 0
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 
+" Avoid full path of file name in section C (middle bottom)
+let g:airline_section_c = '%t'
+
+
+let g:airline_theme ='solarized'
 
 if g:localSession
-
 let g:airline_theme ='solarized'
     let g:airline_symbols = {}
     let g:airline_powerline_fonts = 1
     let g:airline_left_sep = '»'
-    let g:airline_left_sep = '▶'
-    let g:airline_right_sep = '«'
-    let g:airline_right_sep = '◀'
-    let g:airline_symbols.linenr = '¶'
-    let g:airline_symbols.maxlinenr = ''
+    "let g:airline_left_sep = '▶'
+    "let g:airline_right_sep = '«'
+    "let g:airline_right_sep = '◀'
+    "let g:airline_symbols.linenr = '¶'
+    "let g:airline_symbols.maxlinenr = ''
+    "let g:airline_symbols.maxlinenr = ''
     let g:airline_symbols.paste = 'ρ'
     let g:airline_symbols.paste = 'Þ'
     let g:airline_symbols.spell = 'Ꞩ'
@@ -216,11 +249,14 @@ let g:airline_theme ='solarized'
 
     "" powerline symbols
     let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = '|'
+    let g:airline_left_alt_sep = ''
     let g:airline_right_alt_sep = ''
     let g:airline_right_sep = ''
     let g:airline_symbols.branch = ''
     let g:airline_symbols.readonly = ''
+    let g:airline_symbols.linenr = '☰'
+    let g:airline_symbols.maxlinenr = ''
+    let g:airline_symbols.dirty='⚡'
 endif
 
 " Go stuff
@@ -280,3 +316,11 @@ endif
 " Temp settings for DBx1000 code
 autocmd BufRead,BufNewFile /home/con/workspace/grad/research/rlcc/DBx1000-Mix/*.cpp setlocal ts=4 noexpandtab
 autocmd BufRead,BufNewFile /home/con/workspace/grad/research/rlcc/DBx1000-Mix/*.h setlocal ts=4 noexpandtab
+
+nnoremap <leader>N <esc>:NERDTreeFocus<cr>/
+function! NerdEntrRebind()
+    let l:s = NERDTreeGetSID()
+    echom l:s
+    normal <cr>
+endfunction
+autocmd VimEnter * call NERDTreeAddKeyMap({ 'key': '<leader><cr>', 'scope': 'all', 'callback': 'NerdEntrRebind' })
