@@ -32,6 +32,10 @@ augroup tpp_ft
     autocmd BufNewFile,BufRead *.tpp set filetype=cpp
 augroup END
 
+augroup applescript_ft
+    au!
+    autocmd BufNewFile,BufRead *.osascript,*.applescript set filetype=applescript
+
 augroup aqu
     autocmd BufNewFile,BufRead *.a set filetype=sql
 augroup END
@@ -53,6 +57,10 @@ autocmd CmdwinEnter * nnoremap <buffer> <F5> <CR>q:
 
 " This is soo necessary with my touch-bar mac
 inoremap kj <Esc>
+
+" Deal with ugly vertical split
+set fillchars+=vert:\ 
+hi VertSplit ctermfg=236 ctermbg=236 
 
 set background=dark
 " Using terminal solarized scheme, much easier
@@ -100,6 +108,10 @@ nnoremap <leader>( F(ma%x`ax
 xnoremap <leader>" xi""<esc>P
 xnoremap <leader>' xi''<esc>P
 
+" Do python style impoirt for current word
+" TODO: What if no 'import' is present yet? Support other langs
+nnoremap <leader>I mX/\><cr>bywgg/^import<cr>Oimport <esc>p'X
+
 " TODO: Get it to print current filename
 "nnoremap <leader>o <esc>:vnew \| r ! git show master:expand("%:t")
 nnoremap <leader>o <esc>:vnew \| r ! git show master:
@@ -138,6 +150,26 @@ function! AutoReadBranchFile(branch)
     call ReadBranchFile(a:branch, expand('%'), &ft)
 endfunction
 nnoremap <leader>G <esc>:AutoReadBranchFile 
+
+
+" Function to wrap arguments in quotes
+command! -nargs=1 CWrapn call CommentWrap(0, <q-args>)
+nnoremap  <leader>w <esc>:CWrapn 
+
+command! -nargs=1 CWrapp call CommentWrap(1, <q-args>)
+nnoremap  <leader>W <esc>:CWrapp 
+
+function! CommentWrap(above, commentStr)
+    let commentChr=substitute(split(&commentstring, '%s')[0], ' \+$', '', '')
+    let firstHalf=(&tw - strlen(a:commentStr) - 2)/2
+    let secondHalf=&tw - strlen(a:commentStr) - 2 - l:firstHalf
+    let headerLine=repeat(l:commentChr, l:firstHalf) . ' ' . a:commentStr  .  ' ' . repeat(l:commentChr,l:secondHalf)
+    if a:above
+        put! =l:headerLine
+    else
+        put =l:headerLine
+    endif
+endfunction
 
 
 " Buffer moving
@@ -231,7 +263,8 @@ let g:airline_section_c = '%t'
 
 " FIXME: Changed for iTerm
 if g:localSession
-    let g:airline_theme ='luna'
+    " solarized dark: luna
+    let g:airline_theme ='cobalt2'
     let g:airline_symbols = {}
     let g:airline_powerline_fonts = 1
     let g:airline_left_sep = '»'
@@ -325,4 +358,12 @@ function! NerdEntrRebind()
 endfunction
 autocmd VimEnter * call NERDTreeAddKeyMap({ 'key': '<leader><cr>', 'scope': 'all', 'callback': 'NerdEntrRebind' })
 
-
+" Racket / Scheme stuff
+au BufReadPost *.scm set filetype=racket
+augroup racket_ft
+    au!
+    autocmd Syntax racket syntax match keyword "\<lambda\>" conceal cchar=λ
+    set conceallevel=1
+    "autocmd InsertEnter <buffer> setlocal conceallevel=0 | highlight clear Ignore
+    "autocmd InsertLeave <buffer> setlocal conceallevel=2
+augroup end

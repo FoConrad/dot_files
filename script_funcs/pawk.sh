@@ -97,3 +97,4 @@ _pyp() {
 }
 pyp() { _pyp "python" "$@" }
 pyp3() { _pyp "python3" "$@" }
+pawk() { _pyp "python3" "$@" }

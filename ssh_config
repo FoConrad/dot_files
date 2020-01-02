@@ -8,9 +8,29 @@ HOST cims
   identityfile /home/con/.ssh/id_rsa
 
 # Wish these could be made more generic 
+HOST dcos19
+  hostname 10.128.5.177
+
+HOST dcos20
+  hostname 10.128.15.69 
+
 HOST dcos21
   hostname 10.128.9.83
+
+HOST dcos30
+  hostname 10.128.6.4
+
+HOST dcos31
+  hostname 10.128.6.17
 
 HOST dcos*
   user root
   identityfile /Users/conrad/.ssh/id_rsa 
+  UseKeychain yes
+  AddKeysToAgent yes
+
+HOST slave*
+  user root
+  identityfile /Users/conrad/.ssh/id_rsa 
+  UseKeychain yes
+  AddKeysToAgent yes

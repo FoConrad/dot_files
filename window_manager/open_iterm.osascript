@@ -1,0 +1,9 @@
+#!/usr/bin/env osascript
+
+--open -Fna /Applications/iTerm.app/
+
+# `` !/usr/bin/env osascript
+
+tell application "iTerm2"
+    create window with default profile
+end tell

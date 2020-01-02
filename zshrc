@@ -1,89 +1,89 @@
-# Rockerbox specific configurations and functions.
-source $HOME/config/rockerbox_profile # Env vars, and some docker funcs
-source $HOME/config/rbuid_funcs # Functions for emulating pixel fires
-
-# Hack
-export ZSH_DISABLE_COMPFIX=true
-
-# Path manipulation
-# Go path addition
-PATH=$PATH:/usr/local/go/bin
+###################################### # ######################################
+################################ Conrad Config ################################
+###################################### # ######################################
 
 # Stop ctrl-s from freezing the screen in vim. See
 # https://unix.stackexchange.com/questions/12107/how-to-unfreeze-after-accidentally-pressing-ctrl-s-in-a-terminal
 # or similar search results
 stty -ixon
 
-# Finally export it
-export PATH=$PATH
-
-# Cuda, directly from http://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#environment-setup
-export PATH=/usr/local/cuda-9.1/bin:${PATH}
-export LD_LIBRARY_PATH=/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda-9.1/lib64:${LD_LIBRARY_PATH}
-export LIBRARY_PATH=$LD_LIBRARY_PATH
-
-# Path to your oh-my-zsh installation.
-export ZSH="${HOME}/.oh-my-zsh"
+############### General exports, only page when output is long ################
 export XDG_CONFIG_HOME="$HOME/.config"
-PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
-export PKG_CONFIG_PATH
-ZSH_THEME="conrad"
-export KEYTIMEOUT=10 # For going into insertion mode
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
+export LIBRARY_PATH=$LD_LIBRARY_PATH  # Probably vestigal
+
+PATH="${PATH}"
+add_to_path() {
+    local pos="-b"
+    if [[ "$#" -eq 2 ]]; then
+        pos="$1"
+        shift
+    fi
+    [[ "$pos" == "-f" ]] && PATH="${1}:${PATH}" || PATH="${PATH}:${1}"
+    echo "${PATH}"
+}
+
+# readline exports which might have to be specified. No problem as of yet, but
+# listing here for reference
+
+## readline is keg-only, which means it was not symlinked into /usr/local,
+## because macOS provides the BSD libedit library, which shadows libreadline.
+## In order to prevent conflicts when programs look for libreadline we are
+## defaulting this GNU Readline installation to keg-only.
+
+# For compilers to find readline you may need to set:
+#   export LDFLAGS="-L/usr/local/opt/readline/lib"
+#   export CPPFLAGS="-I/usr/local/opt/readline/include"
+
+# For pkg-config to find readline you may need to set:
+#   export PKG_CONFIG_PATH="/usr/local/opt/readline/lib/pkgconfig"
+
+export EDITOR='vim'
+export LESS="-F -X -R $LESS"
 
 export CUPS_USER='conradbc'
+export DOCKER_USER="foconrad" # rel. ~/config/docker.plugin.zsh/docker_util.zsh
+# export LANG=en_US.UTF-8  # may need manual setting
 
-export DOCKER_USER="foconrad"
-export DOCKER_PASSWORD_FILE="${HOME}/config/docker_pass.gpg"
-# Set this up so it does not trigger right away and sit there w/ sensitive
-alias -g DP='DOCKER_PASSWORD=$(gpg -d $DOCKER_PASSWORD_FILE)'
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
+########################## zsh exports and settings ###########################
+export ZSH="${HOME}/.oh-my-zsh"
+export ZSH_DISABLE_COMPFIX=true # hack
+ZSH_THEME="conrad"
 COMPLETION_WAITING_DOTS="true"
-
 DISABLE_UNTRACKED_FILES_DIRTY="true"
+KEYTIMEOUT=10 # For going into insertion mode
 
-plugins=(git tmux autojump vi-mode)
+plugins=(git tmux autojump vi-mode docker)
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode  # @todo - THIS DOES NOT WORK?
 
 source $ZSH/oh-my-zsh.sh
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-export EDITOR='vim'
-export LESS="-F -X $LESS"
-
-###########Conrad Config#################
-
-# Program corrections
-alias awk='/usr/bin/env gawk'
-
-###
 setopt HIST_IGNORE_SPACE
 setopt hist_ignore_dups
-#alias cd=' cd'
-#alias ls=' ls --color=auto'
 
+########### Nonessential and external configs / utility definitions ###########
+source $HOME/config/rockerbox_profile # Env vars, and some docker funcs
+source $HOME/config/rbuid_funcs # Functions for emulating pixel fires
+
+source $HOME/config/docker.plugin.zsh/docker_util.zsh
+
+
+########################## Alias' and redefinitions ###########################
+
+# Program corrections
+alias scala='/usr/local/Cellar/scala@2.11/2.11.12/bin/scala'
+alias awk='/usr/bin/env gawk'
+alias vmore="vim -u ${HOME}/config/vim.less"
 
 alias -g L="|less"
 alias -g V="|vim -u ${HOME}/config/vim.less -"
-alias vmore="vim -u ${HOME}/config/vim.less"
 # See no evil...
+alias -g E='2>/dev/null'
 alias -g B='&>/dev/null &'
 # Trick the following command about the status of the display
 alias -g DY="DISPLAY=':0.0'"
 alias -g DN="DISPLAY=''"
-alias -g CN="CUDA_VISIBLE_DEVICES=''"
 alias -g J='-j$(nproc)'
 
 # Lol, sometimes try and open file via :e write from command line
@@ -99,8 +99,69 @@ alias -s h=vim
 alias -s cpp=vim
 alias ll='ls -latr'
 
+alias bash5="/usr/local/Cellar/bash/5.0.11/bin/bash"
+alias hist="vim ${HOME}/.zsh_history"
+
+# Some import aliases (not sure why lorem is a function...)
+alias gdiffa="/Users/conrad/dot_files/script_funcs/gdiff_add.zsh"
+alias gcommit="git status -uno | grep '^\s*modified' | awk '{print \$2}' | xargs echo git commit -m tmp"
+alias gcur="git branch | grep '^\*' | cut -f2 -d' '"
+
+# Tmux start scripts
+alias work_t='~/config/tmux_starts/dev-work.tmux'
+alias pyplay_t='~/config/tmux_starts/py-play.tmux'
+alias sicp_t='~/config/tmux_starts/sicp.tmux'
+
+# Short cut to editing common files
+alias ezsh='vim ~/.zshrc'
+alias evim='vim ~/.vimrc'
+
 # Zsh autocomplete pattern so that vim will ignore trying to open .pyc
 zstyle ':completion:*:*:vim:*' file-patterns '^*.(aux|log|pyc):source-files' '*:all-files'
+
+
+############# On to useful functions and the wild west for hacks ##############
+
+markdown_watch() {
+    local md_file="$1"
+    open "$md_file" -a Google\ Chrome
+}
+
+# TODO: This needs some final, minor, small, left-as-exercise-to-reader level
+#       edits to get in running condition
+cols() {
+    python ${HOME}/config/script_funcs/cols.py "$@"
+}
+
+notify() {
+    local notify_type="notification"
+    [[ "$#" -gt 1 && "$1" =~ "^-[ae]$" ]] && { notify_type="alert"; shift }
+    [[ "$#" -gt 1 && "$1" =~ "^-n$" ]] && shift
+
+    echo "osascript -e 'display ${notify_type} \"$@\"'" | bash -x
+}
+
+# More easily loading files into racket vs executing them
+racket-load() {
+    if [[ "$#" -lt 1 ]]; then
+        2> echo "usage: racket-load <script> [args]"
+        return 1
+    fi
+    local orig_script="$1" ; shift
+
+    local offset=$(grep -n '^#lang ' $orig_script | head -1 | cut -f1 -d:)
+    [[ -z "$offset" ]] && offset="1" || offset=$((offset+1))
+
+    local tmp_script=$(mktemp)
+
+    tail -n +"${offset}" ${orig_script} > "${tmp_script}.scm"
+    racket -if "${tmp_script}.scm" "$@"
+}
+
+winman() {
+    echo brew services start yabai | bash -x
+    echo brew services start skhdrc | bash -x
+}
 
 duckgo() {
 	search=""
@@ -282,7 +343,7 @@ pdfind() {
 }
 
 lorem() {
-    /Users/conrad/dot_files/lorem.zsh "$@"
+    /Users/conrad/dot_files/script_funcs//lorem.zsh "$@"
 }
 
 tclock() {
@@ -292,9 +353,12 @@ tclock() {
     done
 }
 
+# Clojure setup
+export PATH="$(add_to_path ${HOME}/build/clojure/leiningen)"
+
 
 alias q="QHOME=~/q rlwrap -r ~/q/l64/q"
-export PATH=$PATH:$HOME/q/l64
+export PATH="$(add_to_path $HOME/q/l64)"
 a2q() {
     java -jar /home/con/workspace/grad/classes/advanced_databases_parent/advanced_databases/homework/hw2/aquery/aquery/target/scala-2.11/aquery.jar $*
 }
@@ -307,8 +371,6 @@ vman () {
     /usr/bin/man $* V -c 'set ft=man'
 }
 
-alias dev-t='wmctrl -r ":ACTIVE:" -b add,fullscreen; ~/config/dev-tmux.sh'
-alias pyplay='~/config/dev-py-play.sh'
 alias pwman="bash /home/con/workspace/projects/pw_man/pw_man.sh"
 
 aws() {
@@ -358,7 +420,9 @@ alias -g SO='$(pbpaste -pboard ruler)' # Mouse middle button
 alias -g SI="|pbcopy -pboard ruler"
 
 # Add some other files
-source "${HOME}/config/pawk.sh"
+source "${HOME}/config/script_funcs/pawk.sh"
+
+alias sw="/Users/conrad/dot_files/script_funcs/timer.sh"
 
 # Mac stuff
 alias awk='/usr/bin/env gawk'
@@ -426,8 +490,39 @@ rlink() {
     echo "$(pwd -P)/${target_file}"
 }
 
+Gd() {
+    grep -rnI "$1" "$2"
+}
+
 G() {
     grep -rnI "$@" .
 }
 
+Gf() {
+    [[ "$#" -gt 1 ]] && local dir="$2" || local dir="."
+    
+    grep -onrEI ".{0,20}${1}.{0,30}" "${dir}" 2>/dev/null | sed -E -e 's/^([^[[:space:]]]*)[[:space:]]*/\1/g' -e 's/[[:space:]]*\$//g'
+}
+ 
+# TODO: Same as above but only print file_name:linum with no match showing,
+# ONCE, for every file matching
 
+trim() {
+    sed -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*\$//g'
+}
+
+line() {
+    if [[ "$1" =~ "-*" ]]; then
+        # As param alread has negative sign
+        tail $1 | head -1
+    else
+        head -$1 | tail -1
+    fi
+}
+
+pfind() {
+    # Indexing would have been confusing....
+    local pname="${1}" ; shift
+    local cols="user,pid,%cpu,%mem,start,time,command"
+    ps -emo ${cols} |  { head -1; grep -i "[${pname:0:1}]${pname:1}" }
+}
