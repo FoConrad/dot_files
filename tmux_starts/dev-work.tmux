@@ -1,16 +1,21 @@
 #!/bin/bash
 
-if [[ "$#" -gt 0 && "$1" == "clone" ]]; then 
-    echo "There are $# args with first $1"
-    START_DIR="/Users/conrad/work/rockerbox/clone/rockerbox-metrics"
-    SESS_NAME="devel-rb-clone"
-else
-    echo "(else) There are $# args with first $1"
+# Firrst case special beacuse PATH is
+if [[ "$#" -eq 0 || "$1" == "orig" ]]; then 
     START_DIR="/Users/conrad/work/rockerbox/rockerbox-metrics"
     SESS_NAME="devel-rb-orig"
+else
+    START_DIR="/Users/conrad/work/rockerbox/${1}/rockerbox-metrics"
+    SESS_NAME="devel-rb-${1}"
 fi
 
-if tmux has-session -t "${SESS_NAME}"; then
+if [[ ! -d ${START_DIR} ]]; then
+    >2 echo "Unknown repo clone '$START_DIR'. Currently accpets clone, copy3, "
+    >2 echo "copy4, and orig (default when no arg)."
+    exit 1
+fi
+
+if tmux has-session -t "${SESS_NAME}" 2>/dev/null; then
     eval exec tmux a -t "${SESS_NAME}"
 fi
 

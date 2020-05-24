@@ -9,9 +9,13 @@ alias ta='tmux attach -t'
 alias tad='tmux attach -d -t'
 alias ts='tmux new-session -s'
 alias tS='tmux -u new-session -s'
+alias tus='tmux -u new-session'
 alias tl='tmux list-sessions'
 alias tksv='tmux kill-server'
 alias tkss='tmux kill-session -t'
+alias td='tmux detach'
+alias :d='td'
+alias tab='tmux attach -t base || tmux new-s -s base'
 
 # CONFIGURATION VARIABLES
 # Automatically start tmux

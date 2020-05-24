@@ -23,6 +23,15 @@ HOST dcos30
 HOST dcos31
   hostname 10.128.6.17
 
+HOST metrics-210
+  hostname 10.128.17.203
+
+HOST metrics*
+  user root
+  identityfile /Users/conrad/.ssh/id_rsa 
+  UseKeychain yes
+  AddKeysToAgent yes
+
 HOST dcos*
   user root
   identityfile /Users/conrad/.ssh/id_rsa 

@@ -30,16 +30,18 @@ syntax on
 augroup tpp_ft
     "au!
     autocmd BufNewFile,BufRead *.tpp set filetype=cpp
-augroup END
+augroup end
 
 augroup applescript_ft
     au!
     autocmd BufNewFile,BufRead *.osascript,*.applescript set filetype=applescript
+augroup end
 
 augroup aqu
     autocmd BufNewFile,BufRead *.a set filetype=sql
-augroup END
+augroup end
 
+" figure out how to turn this off for all other filetypes
 " Infect!!!
 execute pathogen#infect()
 execute pathogen#helptags()
@@ -86,6 +88,10 @@ let &textwidth=&colorcolumn-1
 
 set nospell
 set modeline
+
+" add man page functionality!!!
+runtime! ftplugin/man.vim
+
 
 " NOTE: In case 'set spell' is used but the colors are illegible (may need to
 " change the specific colors)
@@ -151,31 +157,52 @@ function! AutoReadBranchFile(branch)
 endfunction
 nnoremap <leader>G <esc>:AutoReadBranchFile 
 
+nnoremap <leader>i lb"iywmigg/import<cr>"iP'i
+
 
 " Function to wrap arguments in quotes
-command! -nargs=1 CWrapn call CommentWrap(0, <q-args>)
-nnoremap  <leader>w <esc>:CWrapn 
+command! -nargs=1 CWrapn call CommentWrap(0, v:count, <q-args>)
+nnoremap  <leader>w :<C-U>CWrapn 
 
-command! -nargs=1 CWrapp call CommentWrap(1, <q-args>)
-nnoremap  <leader>W <esc>:CWrapp 
+command! -nargs=1 CWrapp call CommentWrap(1, v:count, <q-args>)
+nnoremap  <leader>W :<C-U>CWrapp 
 
-function! CommentWrap(above, commentStr)
+function! CommentWrap(above, count, commentStr)
     let commentChr=substitute(split(&commentstring, '%s')[0], ' \+$', '', '')
     let firstHalf=(&tw - strlen(a:commentStr) - 2)/2
     let secondHalf=&tw - strlen(a:commentStr) - 2 - l:firstHalf
     let headerLine=repeat(l:commentChr, l:firstHalf) . ' ' . a:commentStr  .  ' ' . repeat(l:commentChr,l:secondHalf)
+    " XXX: This is soooo ugly. Clearly I have a lot to understand about vimscript
     if a:above
+        if a:count
+            set paste
+            exec('normal mm' . a:count . 'O')
+            normal 'm
+            exec('normal ' . a:count . 'k')
+            set nopaste
+        endif
         put! =l:headerLine
     else
+        if a:count
+            set paste
+            exec('normal mm' . a:count . 'o')
+            normal 'm
+            exec('normal ' . a:count . 'j')
+            set nopaste
+        endif
         put =l:headerLine
     endif
 endfunction
 
 
-" Buffer moving
+""""""""""""""""""""""""""""" Useful leader maps """"""""""""""""""""""""""""""
 nnoremap <Leader>q <ESC>:wqa<CR>
+
+"""""""""""""""""""""""""""""""" Buffer moving """"""""""""""""""""""""""""""""
+" buffer relative
 nnoremap <Leader>a <ESC>:bprev<CR>
 nnoremap <Leader>d <ESC>:bnext<CR>
+" buffer absolute vals
 nnoremap <Leader>1 <ESC>:b1<CR>
 nnoremap <Leader>2 <ESC>:b2<CR>
 nnoremap <Leader>3 <ESC>:b3<CR>
@@ -185,8 +212,19 @@ nnoremap <Leader>6 <ESC>:b6<CR>
 nnoremap <Leader>7 <ESC>:b7<CR>
 nnoremap <Leader>8 <ESC>:b8<CR>
 nnoremap <Leader>9 <ESC>:b9<CR>
+" buffer anchors
+nnoremap <Leader>$ <ESC>:blast<CR>
+nnoremap <Leader>0 <ESC>:bfirst<CR>
 
-nnoremap <leader>v <esc>:read ! xclip -selection clipboard -o<cr>
+nnoremap <leader>v <esc>:read ! pbpaste<cr>
+
+" screen.vim settings
+vnoremap <leader>x :'<'>ScreenSend<cr>
+nnoremap <leader>x <esc>:ScreenSend<cr>
+nnoremap <leader>X <esc>v$:'<'>ScreenSend<cr>
+
+" Prefix python send with %cpaste and suffix with --
+"autocmd FileType python vnoremap <leader>x :'<'>ScreenSend<cr>
 
 function! MakeSessionInput()
     let l:sess_name = input('Session name: ')
@@ -224,8 +262,11 @@ map <c-j> <esc><c-w>j
 map <c-k> <esc><c-w>k
 map <c-l> <esc><c-w>l
 
+" NOTE: This is mac centric, use `xclip -o -selection clipboard` for GNU/Linux
+nnoremap <leader>p :read ! pbpaste<cr>
+
 " Leader paste mode
-nnoremap <leader>p :set invpaste<CR> 
+nnoremap <leader>P :set invpaste<cr>
 
 " Insert single character, type: ,s<char>
 nmap <silent> ,s "=nr2char(getchar())<cr>P
@@ -264,7 +305,7 @@ let g:airline_section_c = '%t'
 " FIXME: Changed for iTerm
 if g:localSession
     " solarized dark: luna
-    let g:airline_theme ='cobalt2'
+    let g:airline_theme ='ubaryd'
     let g:airline_symbols = {}
     let g:airline_powerline_fonts = 1
     let g:airline_left_sep = '»'
@@ -350,6 +391,10 @@ endif
 autocmd BufRead,BufNewFile /home/con/workspace/grad/research/rlcc/DBx1000-Mix/*.cpp setlocal ts=4 noexpandtab
 autocmd BufRead,BufNewFile /home/con/workspace/grad/research/rlcc/DBx1000-Mix/*.h setlocal ts=4 noexpandtab
 
+" Some python shot
+autocmd FileType python nnoremap <leader>m mmggO#!/usr/bin/env python<cr># vim:fileencoding=utf-8<cr><c-w><esc>'m
+
+
 nnoremap <leader>N <esc>:NERDTreeFocus<cr>/
 function! NerdEntrRebind()
     let l:s = NERDTreeGetSID()
@@ -367,3 +412,19 @@ augroup racket_ft
     "autocmd InsertEnter <buffer> setlocal conceallevel=0 | highlight clear Ignore
     "autocmd InsertLeave <buffer> setlocal conceallevel=2
 augroup end
+
+" Clojure rainbos
+augroup clojure
+    " removes vimrc pre-loaded auto commands
+    au! 
+    au BufNewFile,BufRead *.clj RainbowParenthesesActivate
+    "au VimEnter * RainbowParenthesesToggle
+    au Syntax * RainbowParenthesesLoadRound
+    au Syntax * RainbowParenthesesLoadSquare
+    au Syntax * RainbowParenthesesLoadBraces
+augroup end
+
+nnoremap <leader>r <esc>:RainbowParenthesesToggle<cr>
+
+
+nnoremap <M-j> :echo "Did done mapped meta-j"<cr>
