@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "Execute this at your own risk. Better to do by hand"
+exit 1
+
 OH_MY_ZSH_REL_PATH="../oh-my-zsh"
 
 check_n_link() {
@@ -23,7 +26,7 @@ check_n_link() {
 check_n_link "$(pwd)/conrad.zsh-theme" "${OH_MY_ZSH_REL_PATH}/themes/conrad.zsh-theme"
 
 # directories lib
-check_n_link "$(pwd)/directories.lib.zsh " "${OH_MY_ZSH_REL_PATH}/lib/directories.zsh"
+check_n_link "$(pwd)/directories.lib.zsh" "${OH_MY_ZSH_REL_PATH}/lib/directories.zsh"
 
 # git plugin
 check_n_link "$(pwd)/git.plugin.zsh" "${OH_MY_ZSH_REL_PATH}/plugins/git/git.plugin.zsh"
@@ -32,4 +35,4 @@ check_n_link "$(pwd)/git.plugin.zsh" "${OH_MY_ZSH_REL_PATH}/plugins/git/git.plug
 check_n_link "$(pwd)/tmux.plugin.zsh" "${OH_MY_ZSH_REL_PATH}/plugins/tmux/tmux.plugin.zsh"
 
 # vi-mode plugin
-check_n_link "$(pwd)/vi-mode.plugin.zsh" "${OH_MY_ZSH_REL_PATH}/plugins/vi-mode.plugins.zsh"
+check_n_link "$(pwd)/vi-mode.plugin.zsh" "${OH_MY_ZSH_REL_PATH}/plugins/vi-mode/vi-mode.plugin.zsh"
