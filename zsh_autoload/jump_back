@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+usage() {
+    >2 echo "usage: jump_back [<dirs num>]"
+    return "$1"
+}
+
+[[ "$1" =~ '^(-h|--help)$' ]] || usage 0
+
+list_dirs() {
+    dirs -lpv
+}
+
+choice="$1"
+[[ -z "$choice" ]] && {
+    list_dirs
+    read 'choice?Dir selection: '
+}
+
+cd -${choice}

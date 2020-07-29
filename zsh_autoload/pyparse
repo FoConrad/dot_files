@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+
+VENV_PATH="/Users/conrad/projects/command_line_config_parser/penv/bin/activate"
+
+source "${VENV_PATH}"
+
+INPUT_SOURCE=""
+[[ "$#" -gt 1 ]] && INPUT_SOURCE="--config-file $2"
+
+echo test
+python -c 'print("hello2")'
+python -m parse "$1" $INPUT_SOURCE
+echo python -m parse "$1" $INPUT_SOURCE

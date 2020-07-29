@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+vman () {                                          
+    if [[ "$(which $1)" =~ "shell built-in command" ]]; then
+        # Assume only one arg
+        command vim -c "Man zshbuiltins" -c "only" +/"^ *${1}" -c "normal zt" "${@:2}"             
+    else
+        command vim -c "Man $1" -c "only" "${@:2}"             
+    fi
+}                                                  
