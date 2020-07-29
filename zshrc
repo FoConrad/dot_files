@@ -44,7 +44,7 @@ add_to_path() {
 #   export PKG_CONFIG_PATH="/usr/local/opt/readline/lib/pkgconfig"
 
 ################################ golang stuff #################################
-export GOPATH=${HOME}/go
+export GOPATH=${HOME}/build/go
 export PATH="$(add_to_path ${GOPATH}/bin)"
 
 export EDITOR='vim'
@@ -64,8 +64,10 @@ DISABLE_AUTO_TITLE="true"
 KEYTIMEOUT=10 # For going into insertion mode
 
 plugins=(git tmux autojump vi-mode docker)
+################################# Keybindings #################################
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode  # @todo - THIS DOES NOT WORK?
+bindkey '^q' push-line-or-edit
 
 source $ZSH/oh-my-zsh.sh
 
@@ -78,6 +80,11 @@ source $HOME/config/rbuid_funcs # Functions for emulating pixel fires
 
 source $HOME/config/docker.plugin.zsh/docker_util.zsh
 
+###################### Override run-help to use zsh func ######################
+autoload -Uz vman
+
+unalias run-help
+autoload run-help
 
 ########################## Alias' and redefinitions ###########################
 
@@ -96,6 +103,7 @@ alias -g Q='>/dev/null'
 alias -g DY="DISPLAY=':0.0'"
 alias -g DN="DISPLAY=''"
 alias -g J='-j$(nproc)'
+alias -g cG=' | grep --color=yes -E '
 
 # alias :e for vim has been moved to function below where it now accepts the -p
 # flag, to open up files found in the paste buffer
@@ -112,7 +120,7 @@ alias -s cpp=vim
 alias ll='ls -latr'
 
 alias bash5="/usr/local/Cellar/bash/5.0.11/bin/bash"
-alias hist="vim ${HOME}/.zsh_history"
+alias hist="vim -R ${HOME}/.zsh_history"
 alias scratch="vim -c 'setlocal buftype=nofile' -c 'setlocal bufhidden=hide' -c 'setlocal noswapfile'"
 
 # Some import aliases (not sure why lorem is a function...)
@@ -124,10 +132,17 @@ alias work_t='~/config/tmux_starts/dev-work.tmux'
 alias pyplay_t='~/config/tmux_starts/py-play.tmux'
 alias sicp_t='~/config/tmux_starts/sicp.tmux'
 
+# Aliases for viewing and chosing a dev-work session
+alias rb_work="~/dot_files/tmux_starts/rb_work.sh"
+alias rbw="rb_work"
+
 # Short cut to editing common files
 alias ezsh='vim ~/.zshrc'
 alias evim='vim ~/.vimrc'
+alias essh='vim ~/.ssh/config'
 alias etmux='vim ~/.tmux.conf'
+alias ehosts='vim /etc/hosts'
+alias sehosts='sudo vim /etc/hosts'
 
 # Zsh autocomplete pattern so that vim will ignore trying to open .pyc
 zstyle ':completion:*:*:vim:*' file-patterns '^*.(aux|log|pyc):source-files' '*:all-files'
@@ -182,6 +197,34 @@ alias gdiffa='gdiff_add'
 
 nargs() {
     echo "$#"
+}
+
+# Start a shell without rc files or profiles. Shells acceptrd are
+# zsh, bash (for bash 5), and bash3
+norc() {
+    local exec_v=""
+    local shell="$(which zsh)"
+    local args="-df"
+
+    [[ "$#" -gt 0 && "$1" = "-e" ]] && {
+        exec_v="exec";
+        shift;
+    }
+
+    if [[ "$#" -gt 1 && "$2"  =~ ^[^35]$ ]] || [[ ! "$1" =~ ^(zsh|bash[35]?)$ ]]; then
+        echo "Usage (regex desc.): norc (-e)? (zsh|bash[35]?) [35]?"
+        return 1
+    fi
+
+    #if  [[ "$1" = "bash" && "$2" -eq 5 || "$1" = "bash5" ]]; then
+    if  [[ "$1" =~ "^bash" ]]; then
+        [[ "$1" =~ 3$ || "$2" -eq 3 ]] && \
+            shell=/bin/bash || \
+            shell="/usr/local/Cellar/bash/5.0.11/bin/bash" 
+        # Where this function got its name from
+        args="--norc --noprofile"
+    fi
+    eval "$exec_v $shell $args"
 }
 
 # Making a quick and dirty tree command for pprinting dir structures. Next proj
@@ -543,10 +586,6 @@ a2q() {
 what () {
     type $1
     declare -f $1 || alias $1
-}
-
-vman () {
-    vim -c "Man $1" -c "only" "${@:2}"
 }
 
 alias pwman="bash /home/con/workspace/projects/pw_man/pw_man.sh"

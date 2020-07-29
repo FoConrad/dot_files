@@ -25,6 +25,7 @@ filetype plugin indent on
 
 syntax enable
 syntax on
+syn conceal
 
 " Tpp filetype as CPP file
 augroup tpp_ft
@@ -89,10 +90,6 @@ let &textwidth=&colorcolumn-1
 set nospell
 set modeline
 
-" add man page functionality!!!
-runtime! ftplugin/man.vim
-
-
 " NOTE: In case 'set spell' is used but the colors are illegible (may need to
 " change the specific colors)
 "hi SpellBad term=bold cterm=bold ctermfg=124 guifg=Red
@@ -108,6 +105,17 @@ nnoremap <f10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> 
 
 " Mighty leader key!
 let mapleader="\<Space>"
+
+""""""""""""""" Enabling 'man' command and keybindings to help """"""""""""""""
+" add man page functionality!!!
+runtime! ftplugin/man.vim
+
+" A man keybind for searching flags
+"nnoremap <expr> <leader>f "<C-o>mp<C-o>A" . (nr2char(getchar())) . "<C-o>`p"
+nnoremap <expr> <leader>f "mmgg/^ *-" . (nr2char(getchar())) . "[ ,]<return>"
+nnoremap <leader>F oHello Conrad<esc>
+
+"""""""""""""""""""" End section relating to 'man' command """"""""""""""""""""
 
 " Delete surrounding parenthesis
 nnoremap <leader>( F(ma%x`ax
@@ -158,7 +166,6 @@ endfunction
 nnoremap <leader>G <esc>:AutoReadBranchFile 
 
 nnoremap <leader>i lb"iywmigg/import<cr>"iP'i
-
 
 " Function to wrap arguments in quotes
 command! -nargs=1 CWrapn call CommentWrap(0, v:count, <q-args>)
@@ -262,6 +269,11 @@ map <c-j> <esc><c-w>j
 map <c-k> <esc><c-w>k
 map <c-l> <esc><c-w>l
 
+""""""""""""""""""""""""""" Navigating help buffer """"""""""""""""""""""""""""
+" Help page for word under cursor (NOTE: grows number of unlisted buffers)
+" Try with <space><C-h> w/ cursor over -> echo
+nnoremap <leader><c-h> <esc>:help <c-r>=expand("<cword>")<cr><cr><c-w>o
+
 " NOTE: This is mac centric, use `xclip -o -selection clipboard` for GNU/Linux
 nnoremap <leader>p :read ! pbpaste<cr>
 
@@ -302,8 +314,10 @@ let g:airline_section_c = '%t'
 
 
 
-" FIXME: Changed for iTerm
-if g:localSession
+" XXX: Currently setup for iTerm2
+" XXX: This block is not re-executed when this file is resourced (to reload
+" vimrc changes without quiting). It causes errors if it does resource
+if g:localSession && !exists("g:airline_symbols")
     " solarized dark: luna
     let g:airline_theme ='ubaryd'
     let g:airline_symbols = {}
@@ -428,3 +442,7 @@ nnoremap <leader>r <esc>:RainbowParenthesesToggle<cr>
 
 
 nnoremap <M-j> :echo "Did done mapped meta-j"<cr>
+
+"""""""""""""""""""""" Learn vim the hard way exercises """""""""""""""""""""""
+"redraw
+"echom ">^.^<"

@@ -14,7 +14,7 @@ HOST dcos19
 HOST dcos20
   hostname 10.128.15.69 
 
-HOST dcos21
+HOST dcos21 webhook_t tweb
   hostname 10.128.9.83
 
 HOST dcos30
@@ -25,6 +25,10 @@ HOST dcos31
 
 HOST metrics-210
   hostname 10.128.17.203
+
+HOST self
+  hostname localhost
+  user conrad
 
 HOST metrics*
   user root
@@ -41,5 +45,11 @@ HOST dcos*
 HOST slave*
   user root
   identityfile /Users/conrad/.ssh/id_rsa 
+  UseKeychain yes
+  AddKeysToAgent yes
+
+HOST *
+  user root
+  identityfile /Users/conrad/.ssh/id_rsa
   UseKeychain yes
   AddKeysToAgent yes
