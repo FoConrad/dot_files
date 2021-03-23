@@ -1,0 +1,103 @@
+# Vim style pane selection
+bind h select-pane -L
+bind j select-pane -D 
+bind k select-pane -U
+bind l select-pane -R
+
+bind c-h resize-pane -L 5
+bind c-j resize-pane -U 5
+bind c-k resize-pane -D 5
+bind c-l resize-pane -R 5
+
+# Window navigation
+# TODO: Make another binding to send C-b through to shell
+# (C-b C-b used to be an escape to send C-b to sgell.)
+bind C-b last-window
+
+set-window-option -g mode-keys vi
+set-option -g default-command "reattach-to-user-namespace -l zsh"
+set -g default-terminal "screen-256color"
+
+bind P paste-buffer
+bind-key -T copy-mode-vi 'v' send-keys -X begin-selection
+# TODO: select into middle-click buffer as well
+bind-key -T copy-mode-vi 'y' send-keys -X copy-selection
+bind-key -T copy-mode-vi 'r' send-keys -X rectangle-toggle
+
+#bind-key -t vi-copy 'v' begin-selection
+# TODO: select into middle-click buffer as well
+#bind-key -t vi-copy 'y' copy-pipe 'xclip -in -selection clipboard'
+#bind-key -t vi-copy 'Y' copy-pipe 'xclip -in'
+#bind-key -t vi-copy 'r' rectangle-toggle
+
+
+############################# Mouse mode bindngs ##############################
+# NOTE: Mouse mode not used enough for these bindings
+# Toggle mouse on with <c-b>m for on and <c-b>M for off
+
+#bind m \
+  #set -g mouse on \;\
+
+#bind M \
+  #set -g mouse off \;\
+###################################### # ######################################
+
+# This is now done by <C-b>v and works much better
+#unbind +
+#bind + \
+  #new-window -d -n tmux-zoom 'clear && echo TMUX ZOOM && read' \;\
+  #swap-pane -s tmux-zoom.0 \;\
+  #select-window -t tmux-zoom
+    
+#unbind -
+#bind - \
+  #last-window \;\
+  #swap-pane -s tmux-zoom.0 \;\
+  #kill-window -t tmux-zoom
+
+# <prefix>Space is bound to next-layout which cycles through different layouts
+# for current windows panes. But the layout I prefer is complicated and not
+# part of the cycle making it a pain to re-setup if I accidentally hit this
+unbind Space
+bind Space display "Blocked call to next-layout, you're welcome!"
+
+# Start new window, and panes in same directory as where they were created
+unbind c
+bind c new-window -c '#{pane_current_path}'
+unbind %
+bind % split-window -h -c '#{pane_current_path}'
+unbind '"'
+bind '"' split-window -v -c '#{pane_current_path}'
+
+# check bindings with :list-keys 
+bind-key r source-file ~/.tmux.conf \; display-message "~/.tmux.conf reloaded"
+bind c-x respawn-pane -k
+
+###############################################################################
+############################# Tmux Plugin Manager #############################
+###############################################################################
+
+# NOTE: Should remain at bottom (says the GitHub page)
+# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+
+############################### Tmux resurrect ################################
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @resurrect-strategy-vim 'session'
+set -g @resurrect-processes 'python'
+
+
+# Other examples:
+# set -g @plugin 'github_username/plugin_name'
+
+###################################### # ######################################
+###################################### # ######################################
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run -b '~/.tmux/plugins/tpm/tpm'
+
+### TMP
+bind c-g send-keys -t.4 'bash /Users/conrad/tmux.macro' Enter
+bind c-f send-keys -t.1  'bash /Users/conrad/tmux.macro2' Enter
+

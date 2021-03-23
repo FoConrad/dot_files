@@ -1,0 +1,102 @@
+# ~filetype:zsh~
+
+# DOCKER_USER, DOCKER_PASSWORD, and DP alias are set in zshrc
+
+export DCOS_CLUSTER=10.128.13.249
+export DCOS_DIR=$HOME/work/dcos
+# Link dir
+export LNK_DIR=/Users/conrad/work/rockerbox/rockerbox-metrics/.link
+export PYTHONPATH=/Users/conrad/work/rockerbox/rockerbox-metrics/metrics
+
+# Logs
+TMP_LOG_DIR=$HOME/rockerbox-dev/nginx-test/log
+TMP_SANDBOX=$HOME/rockerbox-dev/nginx-test/sandbox
+
+export CHROME_DRIVER_PATH="/Users/conrad/build/chrome_sel/chromedriver"
+export FIREFOX_DRIVER_PATH="/Users/conrad/build/geckodriver"
+
+export DOCKER_DEVELOPMENT_ROOT="/Users/conrad/work/rockerbox/rockerbox-metrics"
+export PRODUCTION_CONTAINERS=('rickotoole/rockerbox-metrics:account-master' 'rickotoole/rockerbox-metrics:attribution-master' 'rickotoole/rockerbox-metrics:attribution-cache-master' 'rickotoole/rockerbox-metrics:attribution-streaming-master' 'rickotoole/rockerbox-metrics:attribution-elassandra-master');
+export CONTAINER_NAMES=('account' 'attribution' 'attribution_cache' 'attribution_streaming' 'attribution_elassandra');
+
+alias renv='source ~/work/rockerbox/renv/bin/activate'
+alias tsenv='source /Users/conrad/work/rockerbox/tsenv/bin/activate'
+# Tmux session setup
+alias fpipe="/Users/conrad/dot_files/tmux_starts/dev-fpipe.tmux"
+
+
+############################ Pipeline IP addresses ############################
+export WEBHOOKS_V2=( $(echo 10.128.{6.{4,17},12.{30,85,196}}) )
+export WEBHOOKS_V2_TEST=( 10.128.17.203 ) # please confirm
+
+export WEBHOOKS_V3=( $(echo 10.128.{1.83,7.46}) )
+########################## End pipeline IP addresses ##########################
+
+############################ RB host / ip resolver ############################
+source "${HOME}/scripts/rb_host/rb_host.sh"
+
+kafcons() {
+    [[ "$#" -lt 1 || "${@: -1}" =~ ^- ]] && {
+        >&2 echo "usage: kafcons [-2] [-t] topic";
+        return 1;
+    }
+
+    BASE_DIR="${HOME}/build/kafka"
+    KDIR="${BASE_DIR}/kafka_2.10-0.8.1.1"
+
+    ARG_OPTIONS=( "--zookeeper zk1:2181/v0_8_1" "--zookeeper zk1:2181/v0_8_1" "--bootstrap-server 165.22.10.9:9092" "--bootstrap-server slave99:9092" )
+    ARG_IND=1
+
+    [[ "$1" == "-2" || "$2" == "-2" ]] && {
+        ARG_IND=$(($ARG_IND + 2));
+        KDIR="${BASE_DIR}/kafka_2.11-2.3.0";
+    }
+
+    [[ "$1" == "-t" || "$2" == "-t" ]] && ARG_IND=$(($ARG_IND + 1));
+
+
+    cd $KDIR
+    local cmd="./bin/kafka-console-consumer.sh "${ARG_OPTIONS[$ARG_IND]}" --topic ${@: -1}"
+    echo "Exec > $cmd"
+    eval $cmd
+}
+
+logs() { 
+    docker logs -f $1; 
+}
+
+set_local_repo() {
+    >&2 echo "exports...";
+
+    local root="rockerbox-metrics"
+    local base_dir="$(pwd)"
+
+    if [[ "$(basename $base_dir)" != "$root" ]]; then
+        >&2 echo "Please navigate to to root of repo (${root})"
+        exit 1
+    fi
+
+    local pyv_metrics="metrics"
+    if [[ "$#" -gt 0 || "$1" == "-3" ]]; then
+        pyv_metrics="${pyv_metrics}3"
+    fi
+
+    export LNK_DIR="${base_dir}/.link"
+    export PYTHONPATH="${base_dir}/${pyv_metrics}"
+} 
+
+setup_s() {
+    s() {
+        ssh root@10.128.$1.$2
+    }
+
+    cat << EOF 
+You can now use the following 
+     > s <num1> <num2>
+to log into root@10.128.<num1>.<num2>
+
+EOF
+
+    eval $(ssh-agent -s)
+    ssh-add
+}

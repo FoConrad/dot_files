@@ -1,0 +1,142 @@
+============ for man page zsh ===================
+
+
+
+============ for man page zshroadmap ===================
+
+
+
+============ for man page zshmisc ===================
+              POSIX  extended  regular  expression using the zzsshh//rreeggeexx module.
+
+
+
+============ for man page zshexpn ===================
+       plicated patterns used in globbing qualifiers  may  need  the  extended
+              the  positional  parameter  array  is  effectively  extended  by
+              If a qq++ is given, an extended form of  minmal  quoting  is  used
+
+
+
+============ for man page zshparam ===================
+
+
+
+============ for man page zshoptions ===================
+              expressions will use the extended regexp syntax provided by  the
+
+
+
+============ for man page zshbuiltins ===================
+
+
+
+============ for man page zshzle ===================
+              gets, nor can the set of functions be extended.   The  supported
+              defined  widgets, nor can the set of functions be extended.  The
+
+
+
+============ for man page zshcompwid ===================
+
+
+
+============ for man page zshcompsys ===================
+
+
+
+============ for man page zshcompctl ===================
+              extended completion (the --xx flag, see the section `Extended Com-
+              with  those  flags  set  (not  counting extended completion) are
+              extended  completion  patterns  `pp[[...]]',  `rr[[...]]', or `RR[[...]]'
+              (see the section  `Extended  Completion'  below)  the  range  is
+              (iii) In an extended completion list (see below),  when  ccoommppccttll
+              ppccttll  will  continue  trying extended completions after the next
+       of the command line; this is referred to as `extended completion'.
+       The  form  with  `--xx'  specifies  extended  completion for the commands
+
+
+
+============ for man page zshmodules ===================
+              Builtins for manipulating extended attributes (xattr).
+       The  zzsshh//aattttrr module is used for manipulating extended attributes.  The
+              Get  the  extended  attribute attribute from the specified file-
+              Set  the  extended attribute attribute on the specified filename
+              Remove the extended attribute attribute from the specified file-
+              List  the  extended  attributes  currently  set on the specified
+       widgets, nor can the set of functions be extended:
+              the pattern.   Option  --xx  will  compile  an  extended  pattern,
+              Matches a string against a POSIX  extended  regular  expression.
+
+
+
+============ for man page zshcalsys ===================
+
+
+
+============ for man page zshtcpsys ===================
+              Each pattern is a standard zsh extended-globbing  pattern;  note
+              Array. May be set directly.  A set of extended globbing patterns
+
+
+
+============ for man page zshzftpsys ===================
+
+
+
+============ for man page zshcontrib ===================
+              extended glob pattern; the pattern needs to be quoted from imme-
+       ''::cchhppwwdd::**''  in  case  the meaning of the context is extended in future,
+       The path as found from zzddnnttoopp is extended with the matching directory,
+              until one matches; if it does, the  context  is  extended  by  a
+              terns.   All  zsh  extended globbing patterns can be used in the
+                     is to quote all zsh extended globbing characters, exclud-
+                     extended globbing characters, but including '<<'  and  '>>'
+              to style patterns in case the  system  is  extended  in  future.
+                     extended  glob patterns for arguments that will be passed
+                     may  be  extended  in  future, so appending `**' is recom-
+              set, POSIX extended regular expressions are used, else Perl-com-
+
+
+
+============ for man page zshall ===================
+              POSIX extended regular expression using  the  zzsshh//rreeggeexx  module.
+       plicated  patterns  used  in  globbing qualifiers may need the extended
+              the  positional  parameter  array  is  effectively  extended  by
+              If  a  qq++  is  given, an extended form of minmal quoting is used
+              expressions  will use the extended regexp syntax provided by the
+              gets, nor can the set of functions be extended.   The  supported
+              defined  widgets, nor can the set of functions be extended.  The
+              extended completion (the --xx flag, see the section `Extended Com-
+              with  those  flags  set  (not  counting extended completion) are
+              extended  completion  patterns  `pp[[...]]',  `rr[[...]]', or `RR[[...]]'
+              (see the section  `Extended  Completion'  below)  the  range  is
+              (iii) In an extended completion list (see below),  when  ccoommppccttll
+              ppccttll  will  continue  trying extended completions after the next
+       of the command line; this is referred to as `extended completion'.
+       The  form  with  `--xx'  specifies  extended  completion for the commands
+              Builtins for manipulating extended attributes (xattr).
+       The  zzsshh//aattttrr module is used for manipulating extended attributes.  The
+              Get  the  extended  attribute attribute from the specified file-
+              Set  the  extended attribute attribute on the specified filename
+              Remove the extended attribute attribute from the specified file-
+              List  the  extended  attributes  currently  set on the specified
+       widgets, nor can the set of functions be extended:
+              the pattern.   Option  --xx  will  compile  an  extended  pattern,
+              Matches a string against a POSIX  extended  regular  expression.
+              Each  pattern  is a standard zsh extended-globbing pattern; note
+              Array. May be set directly.  A set of extended globbing patterns
+              extended glob pattern; the pattern needs to be quoted from imme-
+       ''::cchhppwwdd::**''  in  case  the meaning of the context is extended in future,
+       The path as found from zzddnnttoopp is extended with the matching directory,
+              until one matches; if it does, the  context  is  extended  by  a
+              terns.   All  zsh  extended globbing patterns can be used in the
+                     is to quote all zsh extended globbing characters, exclud-
+                     extended globbing characters, but including '<<'  and  '>>'
+              to style patterns in case the  system  is  extended  in  future.
+                     extended  glob patterns for arguments that will be passed
+                     may  be  extended  in  future, so appending `**' is recom-
+              set, POSIX extended regular expressions are used, else Perl-com-
+
+
+

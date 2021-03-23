@@ -63,7 +63,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 DISABLE_AUTO_TITLE="true"
 KEYTIMEOUT=10 # For going into insertion mode
 
-plugins=(git tmux autojump vi-mode docker)
+plugins=(git tmux autojump vi-mode docker iterm2)
 ################################# Keybindings #################################
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode  # @todo - THIS DOES NOT WORK?
@@ -95,6 +95,7 @@ alias vmore="vim -u ${HOME}/config/vim.less"
 
 alias -g L="|less"
 alias -g V="|vim -u ${HOME}/config/vim.less -"
+alias -g X="|bash -x"
 # See no evil...
 alias -g E='2>/dev/null'
 alias -g B='&>/dev/null &'
@@ -165,6 +166,9 @@ alias jb='jump_back'
 autoload -Uz  gdiff_add
 alias gdiffa='gdiff_add'
 
+autoload -Uz  remove_swaps
+alias rmswp='remove_swaps'
+
 #autoload -Uz  pyparse
 #alias parse='pyparse'
 ############# On to useful functions and the wild west for hacks ##############
@@ -211,8 +215,9 @@ norc() {
         shift;
     }
 
-    if [[ "$#" -gt 1 && "$2"  =~ ^[^35]$ ]] || [[ ! "$1" =~ ^(zsh|bash[35]?)$ ]]; then
-        echo "Usage (regex desc.): norc (-e)? (zsh|bash[35]?) [35]?"
+    if [[ "$#" -gt 1 && "$2"  =~ ^[^35]$ ]] || [[ "$#" -gt 0 && ! "$1" =~ ^(zsh|bash[35]?)$ ]]; then
+        # Args can be: {}, zsh, bash, bash3, bash5, bash 3, bash 5.
+        echo "Usage (regex desc.): norc [-e] [zsh|bash ?[3|5]]"
         return 1
     fi
 
@@ -311,15 +316,6 @@ EOF
 
     echo "> $fcmd | $entr_cmd"
     eval "$fcmd | $entr_cmd"
-}
-
-rmswp() {
-    echo -n "Recursively remove all .swp files? [y/N] "
-    read -r response
-    response=$(echo $response | awk '{print tolower($0)}')
-    [[ "$response" =~ ^(yes|y)$ ]] || return 1
-    find . -regex '.*/\..*.sw[a-p]' | xargs -I{} echo rm {} | bash -x
-    return "$?"
 }
 
 markdown_watch() {
@@ -570,6 +566,42 @@ tclock() {
     done
 }
 
+clean() {
+    local dest_parent="${HOME}/Documents/desktop_move"
+
+    [[ "$#" -gt 0 ]] && local base_target="$1" || local base_target="Desktop"
+    local target="${HOME}/${base_target}"
+    local dest="${dest_parent}/cleaned_${base_target}_$(dt)"
+
+    # TODO: Improve this function to include:
+    #   1. Other directories
+    #   2. File type black- / white-lists to only move certain filetypes 
+    #   3. Option for deleting instead of moving
+    # NOTE: The lower-casing argument 1 done in ZSH style, doesn't work in bash
+    if [[ "$#" -gt 0 && "${base_target:l}" != "desktop" ]]; then
+        >&2 echo "Error: not implemented. Only accepts 'Desktop' or nothing"
+        return 1
+    fi
+
+    if [[ "$(ls ${target} | wc -l | tr -d '[:space:]')" -eq 0 ]]; then
+        return 0
+    fi
+
+    # Make directory where we'll store current Desktop files/dirs
+    echo mkdir "${dest}" | bash -x
+    find "${target}" -maxdepth 1 -not -path '*/\.*' -not -path "${target}"  -exec echo mv "'{}'" "${dest}" \; | bash -x
+
+    # NOTE: The ' around variables is gucci because the command substitution,
+    # and everything inside, is surrounded by double quotes "
+
+    local files_remaining=$(find "$target" -not -path "*/\.*" -not -path "${target}")
+    if [[ -n "${files_remaining}" ]]; then
+        >&2 echo 'Error: some files remaining. Listed:'
+        echo "${files_remaining}"
+    fi
+
+}
+
 # Clojure setup
 export PATH="$(add_to_path ${HOME}/build/clojure/leiningen)"
 
@@ -590,9 +622,9 @@ what () {
 
 alias pwman="bash /home/con/workspace/projects/pw_man/pw_man.sh"
 
-aws() {
-    pwman aws
-}
+# aws() {
+    #pwman aws
+#}
 
 [ -f ~/config/fzf.zsh ] && source ~/config/fzf.zsh
  _gen_fzf_default_opts() {
@@ -744,3 +776,39 @@ pfind() {
     local cols="user,pid,%cpu,%mem,start,time,command"
     ps -emo ${cols} |  { head -1; grep -i "[${pname:0:1}]${pname:1}" }
 }
+
+myip() {
+    # For linux this might be 'ip addr'
+    IP_ADDR_CMD='ifconfig'
+    # Device specific
+    IP_ADDR_DEV='en0';
+
+    if [[ "$#" -gt 0 && "$1" = "-p" ]]; then
+        dig +short myip.opendns.com @resolver1.opendns.com
+    else
+        # Network private ip addr
+        eval "${IP_ADDR_CMD}" | grep -A3 "${IP_ADDR_DEV}"  | grep 'inet\b' | awk '{print $2}'
+    fi
+}
+
+tmp_ws() {
+    local _tdir="$(mktemp -d)"
+
+    if ! [[ "$#" -gt 0 && "$1" =~ ^-?q(uiet)?$ ]]; then
+    cat <<EOF
+Entering session in directory > ${_tdir}
+Exit current shell to remove (all files within removed permanently) in the temp.
+directory and return to current directory $(pwd)"
+EOF
+    fi
+    (
+        cd "${_tdir}"
+        exec "${SHELL:-zsh}"
+    )
+    rm -r "${_tdir}"
+    if [[ "$?" -ne 0 ]]; then
+        >&2 echo "Removal of temp. directory failed with command > rm -r \"${_tdir}\""
+        >&2 echo "Please remove manually"
+    fi
+}
+alias tmpws='tmp_ws'

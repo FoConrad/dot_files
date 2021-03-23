@@ -1,0 +1,166 @@
+#!/usr/bin/env zsh
+
+# Script to find and remove vim's swap files which do not contain
+# modifications.
+#
+# There are two implementation strategies for the recursive mode of this
+# script:
+#   1. Iterate over all of directories, move to them and remove the swap files
+#   locally for each directory
+#   2. Capture list of all swap files in a single find command and use
+#   information on multiple output lines per file to issue remove on the
+#   absolute file path
+
+# NOTE: zsh is 1-indexed, so correct indices are [1, 2]
+_STRATEGIES=( "dir" "list" )
+STRATEGY="${_STRATEGIES[1]}" # dir
+CUR_TTY="${TTY}"
+
+STARTING_DIR="$(pwd)"
+RECURSIVE="false"
+QUIET="false"
+
+usage() {
+    cat << EOF
+Program to find and remove all UNMODIFIED swap files. Each file removed will be 
+printed out to console, unless suppressed. 
+
+Usage 
+ > remove_swaps [-r|-q|-d <starting_dir>] [<starting_dir>]
+
+Options:
+    -r        Recursively from <starting_dir> into all sub-directories
+    -q        Suppress all output to console (names of swap files removed)
+    -d <dir>  Look for swap files in <dir>, or start recursion from there
+EOF
+}
+
+while getopts ":hrqd:" opt; do
+    case ${opt} in
+        h ) usage
+            return 0
+            echo "SHOULD NOT BE HERE"
+            ;;
+        r ) RECURSIVE="true"
+            ;;
+        q ) QUIET="true"
+            ;;
+        d ) STARTING_DIR="${OPTARG}"
+            ;;
+        \? ) die "Invalid option -$OPTARG"
+            ;;
+        : ) die "Bad usage, -$OPTARG requres argument"
+            usage
+            return 1
+            ;;
+    esac
+done
+
+######################### Unused, old implementation ##########################
+_rmswp() {
+    find . -regex '.*/\..*.sw[a-p]' 
+    echo -n "Recursively remove all .swp files? [y/N] "
+    read -r response
+    response=$(echo $response | awk '{print tolower($0)}')
+    [[ "$response" =~ ^(yes|y)$ ]] || return 1
+    find . -regex '.*/\..*.sw[a-p]' | xargs -I{} echo rm {} | bash -x
+    return "$?"
+}
+###################################### # ######################################
+
+
+################################# Util funcs ##################################
+
+log_and_rm() {
+    local full_fh="${1}/${2}"
+    [[ "${QUIET}" == "true" ]] && local out_fd="/dev/null" || local out_fd="${CUR_TTY}"
+    echo "rm ${full_fh}" | bash -x 2> "${out_fd}"
+}
+
+###################################### # ######################################
+
+
+
+################################ List strategy ################################
+get_swap_output() {
+    # The 'bash -c' is used to allow 'vim -r' to be executed inside the target
+    # directory without cd-ing to it.
+    if [[ "${RECURSIVE}" == "true" ]]; then
+        find "${STARTING_DIR}" -type d -exec bash -c "cd {} && vim -r" \;
+    else
+        bash -c "cd ${STARTING_DIR} && vim -r"
+    fi
+}
+
+rm_swaps_by_list() {
+    >&2 echo -e "Function unimplemented, just showing list of swap files\n"
+
+    get_swap_output
+
+    >&2 cat <<EOF
+ 
+#################################### ERROR ####################################
+This solution strategy is unimplemented...
+Please finish it or use the Directory strategy
+EOF
+    return 1
+}
+###################################### # ######################################
+
+
+
+############################# Directory strategy ##############################
+get_directories() {
+    local current_dir="${STARTING_DIR}"
+    if [[ "${RECURSIVE}" == "true" ]]; then
+        find "${STARTING_DIR}" -type d
+    else
+        echo "."
+    fi
+}
+
+condense_vim_r() {
+    vim -r 2>&1 | grep -EA3 '^[1-9][0-9]*\.  +' | gawk 'NR % 5 == 1 || NR % 5 == 4' | awk  'NR%2{printf "%s,",$0;next}{print;}' | gsed 's/\r/ /'
+}
+
+rm_swaps_by_dir() {
+    for dir in $(get_directories); do
+        #echo "I'm going to direrctory $(pwd)!"
+        cd "$dir"
+        while read line ; do
+            #echo "Line $line"
+            if grep -q 'modified: no' <<< "${line}"; then
+                #echo "Grep worked"
+                local fh=$(awk '{print $2}' <<< "${line}")
+                log_and_rm "${dir}" "${fh}"
+            fi
+            #echo "\n"
+        done < <(condense_vim_r)
+#        cd "$dir"
+        ##exec <5 <(stderr_to_stdout) # | grep -EA3 '^[1-9][0-9]*\.  +' | awk 'NR % 5 == 1 || NR % 5 == 4')
+        #exec 5< <(stderr_to_stdout | grep -EA3 '^[1-9][0-9]*\.  +' | awk 'NR % 5 == 1 || NR % 5 == 4')
+        #echo "fd 5 made"
+        #while read file_line <&5 ; do
+            #echo $file_line
+            #read mod_line <&5
+            #echo "File ${file_line}, ${mod_line}"
+        #done
+    done
+    cd "${STARTING_DIR}"
+    return $?
+}
+###################################### # ######################################
+
+
+if [[ "${STRATEGY}" == "dir" ]]; then
+    rm_swaps_by_dir
+elif [[ "${STRATEGY}" == "list" ]]; then
+    rm_swaps_by_list
+else
+    >&2 cat <<EOF
+Error, incorrect strategy: the selected strategy ${STRATEGY} is not one of the
+valid strategies (${_STRATEGIES[@]}).
+EOF
+fi
+
+return $?

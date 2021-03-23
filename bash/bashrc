@@ -1,0 +1,3 @@
+echo "In .bashrc"
+
+source /Users/conrad/dot_files/bash/tmux.completion.bash

@@ -1,0 +1,4 @@
+pane	0	0	:Python	1	:*	0	:/Users/conrad	1	vim	:vim test
+pane	0	0	:Python	1	:*	1	:/Users/conrad	0	Python	:python
+window	0	0	1	:*	cd60,196x70,0,0[196x35,0,0,1,196x34,0,36,2]
+state	0	

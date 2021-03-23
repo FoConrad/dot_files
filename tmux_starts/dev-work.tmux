@@ -28,5 +28,6 @@ tmux -2 new-session -s ${SESS_NAME} -c ${START_DIR} \; \
     send-keys 'ipython' Enter \; \
     split-window -h \; \
     send-keys 'source ~/work/rockerbox/renv/bin/activate' Enter \; \
+    send-keys 'gcur' Enter \; \
     select-pane -U \; \
     send-keys 'vim build.sh' Enter

@@ -1,0 +1,48 @@
+
+# ~filetype:zsh~
+
+get() {
+    # Defaults for pixel
+    local content_type='image/gif'
+    if [[ "$#" -gt 0 && "$1" =~ "jsonp" ]]; then
+        content_type="text/javascript"
+    fi
+    local resp="$(curl -X GET -H 'Content-type ${content_type}' $2 2>/dev/null)"
+    echo "$resp"
+}
+
+rbuid() {
+    local get_resp="$(get jsonp 'http://getrockerbox.com/jpuid?jsonp=RB.jsonPUID')"
+    local rbuid="$(echo $get_resp | sed -E 's/.*rbuid\":\"([^"]+)\".*$/\1/')"
+    echo $rbuid
+}
+
+fire() {
+    local rbuid="$1" ; shift
+    local query_prefix='https://getrockerbox.com/v2/rb?pageReferrer=https%3A%2F%2Fwww.google.com%2F&url=https%3A%2F%2Fwww.eventable.com%2F'
+    local query_suffix='source=eventable&rb_source=eventable&script_version=wxyz.v2.js&sessionId=4d4c905c-b92a-48a8-90e4-3ef90e21be7e&uid='
+    query_suffix="${query_suffix}${rbuid}"
+    if [ "$#" -gt 0 ]; then
+        for action in "$@"; do
+            query_prefix="${query_prefix}&action=${action}"
+        done
+    else
+        query_prefix="${query_prefix}&action=view"
+    fi
+    echo get pixel "${query_prefix}&${query_suffix}"
+    get pixel "${query_prefix}&${query_suffix}"
+}
+
+reroute_getrockerbox() {
+    if [[ "$#" -gt 0 && "$1" =~ "restore" ]]; then
+        sudo sed -i'.bak' -E '/^[^#].*4?5.55.100.121.*getrockerbox\.com/d' /etc/hosts
+    else
+        grep -qE '^[^#]*45.55.100.121\tgetrockerbox.com' /etc/hosts
+        if [ "$?" -eq 0 ]; then
+            echo "Host file already has 45.55.100.121, see:"
+            grep -nE '^[^#]*45.55.100.121\tgetrockerbox.com' /etc/hosts
+            exit 1
+        fi
+        echo -e '45.55.100.121\tgetrockerbox.com' | sudo tee -a /etc/hosts
+    fi
+}

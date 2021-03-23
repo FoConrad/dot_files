@@ -1,0 +1,10 @@
+pane	kafka	0	:vim	1	:*Z	0	:/Users/conrad/work/rockerbox/tmp/webhooks_v3_test	0	vim	:vim issue_replay.py
+pane	kafka	0	:vim	1	:*Z	1	:/Users/conrad/work/rockerbox/tmp/webhooks_v3_test	0	python	:/Users/conrad/work/rockerbox/renv/bin/python /Users/conrad/work/rockerbox/renv/bin/ipython
+pane	kafka	0	:vim	1	:*Z	2	:/Users/conrad/work/rockerbox/clone/rockerbox-metrics	0	python	:/Users/conrad/work/rockerbox/renv/bin/python /Users/conrad/work/rockerbox/renv/bin/ipython
+pane	kafka	0	:vim	1	:*Z	3	:/Users/conrad/build/kafka/kafka_2.11-2.3.0	1	vim	:vim /Users/conrad/.tmux.conf
+pane	kafka	0	:vim	1	:*Z	4	:/Users/conrad/build/kafka/kafka_2.11-2.3.0	0	zsh	:
+pane	kafka	1	:zsh	0	:-	0	:/Users/conrad/build/kafka/kafka_2.11-2.3.0	1	zsh	:
+pane	kafka	1	:zsh	0	:-	1	:/Users/conrad/build/kafka/kafka_2.11-2.3.0	0	zsh	:
+window	kafka	0	1	:*Z	6583,196x70,0,0[196x22,0,0{98x22,0,0,108,97x22,99,0,111},196x17,0,23{98x17,0,23,109,97x17,99,23,112},196x29,0,41,110]
+window	kafka	1	0	:-	24c3,196x70,0,0[196x33,0,0,81,196x36,0,34,101]
+state	kafka	

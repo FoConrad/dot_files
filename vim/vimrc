@@ -64,6 +64,7 @@ inoremap kj <Esc>
 " Deal with ugly vertical split
 set fillchars+=vert:\ 
 hi VertSplit ctermfg=236 ctermbg=236 
+"hi SpellBad ctermfg=236 ctermbg=236 
 
 set background=dark
 " Using terminal solarized scheme, much easier
@@ -129,6 +130,10 @@ nnoremap <leader>I mX/\><cr>bywgg/^import<cr>Oimport <esc>p'X
 " TODO: Get it to print current filename
 "nnoremap <leader>o <esc>:vnew \| r ! git show master:expand("%:t")
 nnoremap <leader>o <esc>:vnew \| r ! git show master:
+
+" Map to show full file path of current file
+nnoremap <leader>r <esc>:!echo $(pwd)/%<cr>
+nnoremap <leader>R <esc>:silent exec "! echo $(pwd)/% \| pbcopy"<cr>:redraw!<cr>
 
 " Turn on highlight and search
 hi Search ctermbg=LightBlue
@@ -201,6 +206,13 @@ function! CommentWrap(above, count, commentStr)
     endif
 endfunction
 
+""""""""""""""""""""""" Setting very magic for searches """""""""""""""""""""""
+nnoremap / /\v
+vnoremap / /\v
+cnoremap %s/ %smagic/
+cnoremap \>s/ \>smagic/
+nnoremap :g/ :g/\v
+nnoremap :g// :g//
 
 """"""""""""""""""""""""""""" Useful leader maps """"""""""""""""""""""""""""""
 nnoremap <Leader>q <ESC>:wqa<CR>
@@ -319,7 +331,8 @@ let g:airline_section_c = '%t'
 " vimrc changes without quiting). It causes errors if it does resource
 if g:localSession && !exists("g:airline_symbols")
     " solarized dark: luna
-    let g:airline_theme ='ubaryd'
+    let g:airline_theme ='bubblegum'
+    "let g:airline_theme ='ubaryd'
     let g:airline_symbols = {}
     let g:airline_powerline_fonts = 1
     let g:airline_left_sep = '»'
@@ -438,11 +451,6 @@ augroup clojure
     au Syntax * RainbowParenthesesLoadBraces
 augroup end
 
-nnoremap <leader>r <esc>:RainbowParenthesesToggle<cr>
+"nnoremap <leader>r <esc>:RainbowParenthesesToggle<cr>
 
-
-nnoremap <M-j> :echo "Did done mapped meta-j"<cr>
-
-"""""""""""""""""""""" Learn vim the hard way exercises """""""""""""""""""""""
-"redraw
-"echom ">^.^<"
+""""""""""""""""""""""""""""""""" Leader maps """""""""""""""""""""""""""""""""

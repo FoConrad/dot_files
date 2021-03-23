@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+# Limit resources used by Chrome (make more general later).
+#
+# Approaches:
+#   1. ulimit
+#   2. cgroups
+
+
+
+################################## 1. ulimit ##################################
+read -r -d '' EXAMPLE_CHROME_STARTED << 'EOF'
+#!/usr/bin/env zsh
+ulimit -Sv 10240000 #amount of memory available in bytes 
+/usr/bin/google-chrome-stable
