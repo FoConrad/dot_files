@@ -63,7 +63,7 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 DISABLE_AUTO_TITLE="true"
 KEYTIMEOUT=10 # For going into insertion mode
 
-plugins=(git tmux autojump vi-mode docker iterm2)
+plugins=(git tmux autojump vi-mode docker kubectl iterm2)
 ################################# Keybindings #################################
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode  # @todo - THIS DOES NOT WORK?
@@ -74,11 +74,16 @@ source $ZSH/oh-my-zsh.sh
 setopt HIST_IGNORE_SPACE
 setopt hist_ignore_dups
 
+
 ########### Nonessential and external configs / utility definitions ###########
-source $HOME/config/rockerbox_profile # Env vars, and some docker funcs
-source $HOME/config/rbuid_funcs # Functions for emulating pixel fires
+#source $HOME/config/rockerbox_profile # Env vars, and some docker funcs
+#source $HOME/config/rbuid_funcs # Functions for emulating pixel fires
+
+source $HOME/config/vise/vise_profile
 
 source $HOME/config/docker.plugin.zsh/docker_util.zsh
+
+source $HOME/config/tmux_starts/shared_funcs.zsh
 
 ###################### Override run-help to use zsh func ######################
 autoload -Uz vman
@@ -158,7 +163,7 @@ alias -g VFT='| _vftf'
 
 # XXX, NOTE: To future self, if you are thinking of adding to fpath, please
 # move this export and organize better
-export fpath=( ~/dot_files/zsh_autoload "${fpath[@]}" )
+export fpath=( ~/config/zsh_autoload "${fpath[@]}" )
 
 autoload -Uz jump_back
 alias jb='jump_back'
@@ -556,7 +561,7 @@ pdfind() {
 }
 
 lorem() {
-    /Users/conrad/dot_files/script_funcs//lorem.zsh "$@"
+    /Users/conradchristensen/config/script_funcs//lorem.zsh "$@"
 }
 
 tclock() {
@@ -671,12 +676,13 @@ alias -g SI="|pbcopy -pboard ruler"
 # Add some other files
 source "${HOME}/config/script_funcs/pawk.sh"
 
-alias sw="/Users/conrad/dot_files/script_funcs/timer.sh"
+alias sw="/Users/conradchristensen/config/script_funcs/timer.sh"
 
 # Mac stuff
 alias awk='/usr/bin/env gawk'
 alias nproc="sysctl -n hw.ncpu"
-alias cgo="source ${HOME}/work/def_py3_env/bin/activate"
+# Moved to vise_profile
+#alias cgo="source ${HOME}/work/def_py3_env/bin/activate"
 
 alias desc='declare -f'
 
@@ -684,9 +690,9 @@ dget() {
     scp desk:${1} .
 }
 
-eval "$(thefuck --alias)"
+#eval "$(thefuck --alias)"
 # You can use whatever you want as an alias, like for Mondays:
-eval "$(thefuck --alias shit)"
+#eval "$(thefuck --alias shit)"
 
 ######################### New functions and aliases ###########################
 untar() {
@@ -812,3 +818,9 @@ EOF
     fi
 }
 alias tmpws='tmp_ws'
+
+export PATH="$HOME/.poetry/bin:$PATH"
+alias pty_src="source $HOME/.poetry/env"
+
+# kubectl
+[[ /usr/local/bin/kubectl ]] && source <(kubectl completion zsh)

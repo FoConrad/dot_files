@@ -287,7 +287,9 @@ map <c-l> <esc><c-w>l
 nnoremap <leader><c-h> <esc>:help <c-r>=expand("<cword>")<cr><cr><c-w>o
 
 " NOTE: This is mac centric, use `xclip -o -selection clipboard` for GNU/Linux
-nnoremap <leader>p :read ! pbpaste<cr>
+"       (can also be accomplished setting paste w/ <C>-v
+" NOTE: This is turned off to allow vim-prettier
+"nnoremap <leader>p :read ! pbpaste<cr>
 
 " Leader paste mode
 nnoremap <leader>P :set invpaste<cr>
@@ -334,8 +336,8 @@ if g:localSession && !exists("g:airline_symbols")
     let g:airline_theme ='bubblegum'
     "let g:airline_theme ='ubaryd'
     let g:airline_symbols = {}
-    let g:airline_powerline_fonts = 1
-    let g:airline_left_sep = '»'
+    "let g:airline_powerline_fonts = 1
+    "let g:airline_left_sep = '»'
     "let g:airline_left_sep = '▶'
     "let g:airline_right_sep = '«'
     "let g:airline_right_sep = '◀'
@@ -349,14 +351,14 @@ if g:localSession && !exists("g:airline_symbols")
     let g:airline_symbols.whitespace = 'Ξ'
 
     "" powerline symbols
-    let g:airline_left_sep = ''
-    let g:airline_left_alt_sep = ''
-    let g:airline_right_alt_sep = ''
-    let g:airline_right_sep = ''
-    let g:airline_symbols.branch = ''
-    let g:airline_symbols.readonly = ''
+    "let g:airline_left_sep = ''
+    "let g:airline_left_alt_sep = ''
+    "let g:airline_right_alt_sep = ''
+    "let g:airline_right_sep = ''
+    "let g:airline_symbols.branch = ''
+    "let g:airline_symbols.readonly = ''
     let g:airline_symbols.linenr = '☰'
-    let g:airline_symbols.maxlinenr = ''
+    "let g:airline_symbols.maxlinenr = ''
     let g:airline_symbols.dirty='⚡'
 endif
 
@@ -453,4 +455,24 @@ augroup end
 
 "nnoremap <leader>r <esc>:RainbowParenthesesToggle<cr>
 
+" Set tsx filetype the same as jsx: javascriptreact
+augroup filetypedetect
+    au! BufRead,BufNewFile *.tsx       setfiletype javascriptreact
+augroup END
+
 """"""""""""""""""""""""""""""""" Leader maps """""""""""""""""""""""""""""""""
+
+" Typescript stuff
+autocmd FileType typescript setlocal shiftwidth=2 softtabstop=2 expandtab
+autocmd FileType typescriptreact setlocal shiftwidth=2 softtabstop=2 expandtab
+autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescriptreact
+
+" I hate that I am using multiple package managers
+"""""""""""""""""""""""""""""""""" Vim Plug """""""""""""""""""""""""""""""""""
+call plug#begin('~/.vim/plugged')
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+" Initialize plugin system
+call plug#end()
+
+

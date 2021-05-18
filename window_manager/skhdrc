@@ -1,5 +1,5 @@
 # open terminal
-cmd + ctrl - return : /Users/conrad/dot_files/window_manager/open_iterm.osascript
+cmd + ctrl - return : /Users/conradchristensen/config/window_manager/open_iterm.osascript
 #cmd - return : /Applications/Kitty.app/Contents/MacOS/kitty --single-instance -d ~
 
 # focus window

@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+
+# Make into alias or command:
+# ssh -L 5432:vise-dev.cluster-cmxjmx3veewr.us-west-2.rds.amazonaws.com:5432 -N ubuntu@ec2-54-202-99-124.us-west-2.compute.amazonaws.com -i ~/.ssh/id_rsa
+#
+# Connect:
+#    psql postgresql://viseai:vise1234@localhost/viseai_db
+# or
+#    psql postgresql
+
+########################## From brew install node@12 ##########################
+#icu4c is keg-only, which means it was not symlinked into /usr/local,
+#because macOS provides libicucore.dylib (but nothing else).
+
+#If you need to have icu4c first in your PATH, run:
+  #echo 'export PATH="/usr/local/opt/icu4c/bin:$PATH"' >> ~/.zshrc
+  #echo 'export PATH="/usr/local/opt/icu4c/sbin:$PATH"' >> ~/.zshrc
+
+#For compilers to find icu4c you may need to set:
+  #export LDFLAGS="-L/usr/local/opt/icu4c/lib"
+  #export CPPFLAGS="-I/usr/local/opt/icu4c/include"
+
+#==> node@12
+#node@12 is keg-only, which means it was not symlinked into /usr/local,
+#because this is an alternate version of another formula.
+
+#If you need to have node@12 first in your PATH, run:
+  #echo 'export PATH="/usr/local/opt/node@12/bin:$PATH"' >> ~/.zshrc
+
+#For compilers to find node@12 you may need to set:
+  #export LDFLAGS="-L/usr/local/opt/node@12/lib"
+  #export CPPFLAGS="-I/usr/local/opt/node@12/include"
+
+export PATH="/usr/local/opt/node@12/bin:$PATH"
+export PATH="/usr/local/opt/icu4c/bin:$PATH"
+export PATH="/usr/local/opt/icu4c/sbin:$PATH"
+
+
+
+#If you need to have krb5 first in your PATH, run:
+  #echo 'export PATH="/usr/local/opt/krb5/bin:$PATH"' >> ~/.zshrc
+  #echo 'export PATH="/usr/local/opt/krb5/sbin:$PATH"' >> ~/.zshrc
+
+#For compilers to find krb5 you may need to set:
+  #export LDFLAGS="-L/usr/local/opt/krb5/lib"
+#  export CPPFLAGS="-I/usr/local/opt/krb5/include"
+
+export PATH="/usr/local/opt/krb5/bin:$PATH"
+export PATH="/usr/local/opt/krb5/sbin:$PATH"
+
+
+#To migrate existing data from a previous major version of PostgreSQL run:
+  #brew postgresql-upgrade-database
+
+#This formula has created a default database cluster with:
+  #initdb --locale=C -E UTF-8 /usr/local/var/postgres
+#For more details, read:
+  #https://www.postgresql.org/docs/13/app-initdb.html
+
+#To have launchd start postgresql now and restart at login:
+  #brew services start postgresql
+#Or, if you don't want/need a background service you can just run:
+  #pg_ctl -D /usr/local/var/postgres start
+
+# brew install cbc
+
+#openblas is keg-only, which means it was not symlinked into /usr/local,
+#because macOS provides BLAS in Accelerate.framework.
+
+#For compilers to find openblas you may need to set:
+  #export LDFLAGS="-L/usr/local/opt/openblas/lib"
+  #export CPPFLAGS="-I/usr/local/opt/openblas/include"
+
+#For pkg-config to find openblas you may need to set:
+export PKG_CONFIG_PATH="/usr/local/opt/openblas/lib/pkgconfig"
+
+# bonmin
+export PATH="/Users/conradchristensen/user_paths/bonmin:$PATH"
+
+# cplex
+#
+# To setup with python
+# python /Applications/CPLEX_Studio_Community1210/python/setup.py install
+export PATH="${PATH}:/Applications/CPLEX_Studio_Community1210/cplex/bin/x86-64_osx/"
+
+################################# pyenv path ##################################
+
+# gpg and guile for tls
+# export GUILE_TLS_CERTIFICATE_DIRECTORY=/usr/local/etc/gnutls/
+
+
+###################################### # ######################################
+################################### Aliases ###################################
+###################################### # ######################################
+
+alias evise='vim ~/config/vise/vise_profile'
+
+###################################### # ######################################
+################################## Functions ##################################
+###################################### # ######################################
+
+############################ Vise tools, from orig ############################
+vtools() {
+    export PATH="$HOME/vise/code/orig/vise/tools:$PATH"
+}
+########################### Aliases related to vise ###########################
+cgo() {
+    export PATH=$(pyenv root)/shims:$PATH
+    pyenv local 3.7.10
+}
+
+get_secret() {
+    local env_var="dev"
+    if [[ "$#" -gt 0 ]]; then
+        env_var="$1"
+    fi
+     aws secretsmanager get-secret-value --secret-id "vise-${env_var}-secret" | jq -r ".SecretString | fromjson.password"
+}
+
+double_c() {
+    if ! which pre-commit &> /dev/null; then
+        echo "Please start poetry env with cgo"
+        return
+    fi
+    local err=0
+    PYTHON_ROOT=$(git rev-parse --show-toplevel)/python
+    pushd $PYTHON_ROOT >/dev/null
+        pre-commit run -a && mypy .
+        err="$?"
+    popd >/dev/null
+    if [[ "$err" -eq 0 && "$#" -gt 0 ]]; then
+        pytest "$1"
+    fi
+    if [[ "$err" -ne 0 || "$?" -ne 0 ]]; then
+        >&2 echo "Failed check"
+        return -1
+    fi
+}
+
+# Add tools to path... this is what vtools is for (carefule, not vtool)!
+#export PATH="$HOME/vise/code/orig/vise/tools:$PATH"
